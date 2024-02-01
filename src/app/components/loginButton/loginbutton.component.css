@@ -1,0 +1,46 @@
+
+:host{
+  ---facebook-button:#3680b0;
+  ---google-button:#fff;
+  ---github-button:#00000;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  padding: 8px 16px;
+  margin-top: 8px;
+  margin-right: 5px;
+  text-align: center;
+  background-color: var(---facebook-button);
+  border: none;
+  color: #000000;
+  transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  border-radius: 50%;
+}
+
+.button:hover {
+  background-color: #1386f8;
+  color: #fff;
+  transform: scale(1.05);
+}
+.google{
+  background-color: white!important;
+  color: #000000!important;
+  .text {
+    font-size: 14px;
+    color: #000000;
+  }
+}
+.github{
+  background-color:black!important;
+  color: whitesmoke!important;
+}

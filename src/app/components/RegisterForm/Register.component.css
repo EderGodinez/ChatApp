@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  height: 100%;
+}
+.form-control{
+  border-radius: 20px;
+}
+.invalid-field{
+  border: 1px solid red;
+  border-radius: 20px;
+}
+
+@media (width< 500px) {
+  .form-control {
+    font-size: 12px!important;
+  }
+}

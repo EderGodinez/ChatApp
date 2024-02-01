@@ -1,0 +1,38 @@
+:host {
+  color: white;
+  background-color:#212529;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+#routerContainer{
+  flex-grow: 1;
+}
+
+#routerContainer::-webkit-scrollbar{
+  width: 10px;
+}
+#routerContainer::-webkit-scrollbar-thumb{
+background-color: rgba(200, 200, 200, .5);
+border-radius: 10px;
+}
+
+#routerContainer::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+img{
+  width: 40px;
+  height:  40px;
+aspect-ratio: 1 / 1;
+overflow: hidden;
+border-radius: 50%;
+}
+#signout{
+  color: white;
+  transition: all 0.3s ease-in;
+}
+#signout:hover{
+  cursor: pointer;
+ color: rgb(62, 62, 126);
+}

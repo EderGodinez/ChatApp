@@ -1,11 +1,11 @@
 import { Router } from '@angular/router';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import {GoogleAuthProvider,FacebookAuthProvider,GithubAuthProvider} from 'firebase/auth'
 
-import { LoginButtonComponent } from '../../components/loginButton/loginbutton.component';
+import { LoginButtonComponent } from '../../components/LoginComponets/loginButton/loginbutton.component';
 import { ValidatorService } from 'src/app/validators/validators.service';
 import { AuthService } from './../../services/auth.service';
 
@@ -34,8 +34,9 @@ import { AuthService } from './../../services/auth.service';
 </div>
 <div class="my-3 w-100 text-start">
 <div class="form-floating w-100" [ngClass]="IsValidField('password') ? 'invalid-field' : ''">
-  <input type="password" class="form-control" id="floatingPassword"style="width:100%" formControlName="password">
+  <input type="password" class="form-control" id="floatingPassword"style="width:100%" formControlName="password" #password>
   <label for="floatingPassword">Contraseña</label>
+  <i class="bi-eye-slash" (click)="handleShowpass()" #hide></i>
 </div>
 <small  *ngIf="IsValidField('password')" style="margin-left:10px;color:red">{{getMessageError('password')}}</small>
 </div>
@@ -63,6 +64,23 @@ export class LoginComponent {
     email:["",[Validators.required]],
     password:["",[Validators.required]]
   })
+  @ViewChild('password')
+  inputpassword!:ElementRef
+  @ViewChild('hide')
+  HidePassIcon!:ElementRef | undefined;
+  handleShowpass(){
+      const passwordInput = this.inputpassword;
+      const inputType = passwordInput.nativeElement.type;
+      if (inputType === 'password') {
+        passwordInput.nativeElement.type = 'text';
+        this.HidePassIcon?.nativeElement.classList.remove('bi-eye-slash');
+        this.HidePassIcon?.nativeElement.classList.add('bi-eye');
+      } else {
+        passwordInput.nativeElement.type = 'password';
+        this.HidePassIcon?.nativeElement.classList.remove('bi-eye');
+        this.HidePassIcon?.nativeElement.classList.add('bi-eye-slash');
+      }
+  }
   getMessageError(field:string){
     return this.ValidatorService.getFieldError(this.LoginForm,field)
   }
@@ -116,7 +134,7 @@ export class LoginComponent {
       const errorMessage = error.message;
       const email = error.customData.email;
       const credential = GithubAuthProvider.credentialFromError(error);
-    
+
     });
   }
   login(){

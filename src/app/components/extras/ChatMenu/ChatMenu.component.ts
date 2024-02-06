@@ -12,8 +12,8 @@ import { option } from 'src/app/interfaces/ChatOptions.interface';
   ],
   template: `
     <hr class="text-white m-0">
-  <ul class="d-flex w-100 flex-nowrap justify-content-between p-0 my-0 pe-2 ps-2">
-    <li *ngFor="let option of Options" class="d-flex gap-2 p-0 ml-0" style="font-size: 12px;">
+  <ul class="d-flex w-100 flex-nowrap justify-content-evenly p-0 my-0 pe-2 ps-2">
+    <li *ngFor="let option of Options" class="d-flex gap-2 p-0 ml-0 " style="cursor:pointer;font-size: 12px;">
     <span [routerLink]="option.Link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="d-flex flex-column text-center" >
       <i [class]="option.icon" style="font-size: 1.25rem;"></i>
     {{option.OptionName}}

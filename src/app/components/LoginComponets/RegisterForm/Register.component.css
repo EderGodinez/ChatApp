@@ -5,6 +5,17 @@
 .form-control{
   border-radius: 20px;
 }
+.form-floating{
+  position:relative;
+}
+.form-floating i{
+  cursor: pointer;
+  z-index: 4;
+  color: black;
+  position:absolute;
+  right: 15px;
+  top: 15px;
+}
 .invalid-field{
   border: 1px solid red;
   border-radius: 20px;

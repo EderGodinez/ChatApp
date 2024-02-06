@@ -1,6 +1,6 @@
 
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { ValidatorService } from 'src/app/validators/validators.service';
@@ -30,12 +30,14 @@ import { ValidatorService } from 'src/app/validators/validators.service';
 </div>
 <small *ngIf="IsValidField('email')"style="color:red">{{getMessageError('email')}}</small>
 <div class="form-floating my-3 w-100" [ngClass]="IsValidField('password') ? 'invalid-field' : ''">
-  <input type="password" class="form-control" style="width:100%" formControlName="password">
+  <input type="password" class="form-control" style="width:100%" formControlName="password"  #password>
+  <i class="bi-eye-slash" (click)="handleShowpass('password',0)" #hide></i>
   <label for="floatingPassword">Contraseña</label>
 </div>
 <small *ngIf="IsValidField('password')"style="color:red">{{getMessageError('password')}}</small>
 <div class="form-floating my-3 w-100" [ngClass]="IsValidField('confirmPass') ? 'invalid-field' : ''">
-  <input type="password" class="form-control" style="width:100%" formControlName="confirmPass">
+  <input type="password" class="form-control" style="width:100%" formControlName="confirmPass" #Confirm>
+  <i class="bi-eye-slash" (click)="handleShowpass('confirm',1)" #hide></i>
   <label for="floatingPassword">Confirmar contraseña</label>
 </div>
 <small *ngIf="IsValidField('confirmPass')" style="color:red">{{getMessageError('confirmPass')}}</small>
@@ -58,6 +60,27 @@ export class RegisterComponent {
     password:["",[Validators.required,Validators.minLength(10)]],
     confirmPass:["",[Validators.required]],
   })
+  @ViewChild('password')
+  inputpassword!:ElementRef
+  @ViewChild('Confirm')
+  inputConfirmpassword!:ElementRef
+  @ViewChildren('hide')
+  HidePassIcons!:QueryList<ElementRef> | undefined;
+  handleShowpass(field:string,index:number){
+    const passwordInput = field === 'confirm' ? this.inputConfirmpassword : this.inputpassword;
+    if (passwordInput) {
+      const inputType = passwordInput.nativeElement.type;
+      if (inputType === 'password') {
+        passwordInput.nativeElement.type = 'text';
+        this.HidePassIcons?.toArray()[index].nativeElement.classList.remove('bi-eye-slash');
+        this.HidePassIcons?.toArray()[index].nativeElement.classList.add('bi-eye');
+      } else {
+        passwordInput.nativeElement.type = 'password';
+        this.HidePassIcons?.toArray()[index].nativeElement.classList.remove('bi-eye');
+        this.HidePassIcons?.toArray()[index].nativeElement.classList.add('bi-eye-slash');
+      }
+    }
+  }
   PasswordEquals(field1:string,field2:string){
     return this.ValidatorService.AreFieldsEquals(field1,field2)
   }

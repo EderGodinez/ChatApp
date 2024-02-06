@@ -4,13 +4,13 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent } from './pages/login/login.component';
 import { ChatLayoutComponent } from './pages/chat-layout/chat-layout.component';
-import { LoginLayoutComponent } from './components/LoginLayout/LoginLayout.component';
-import { RegisterComponent } from './components/RegisterForm/Register.component';
+import { LoginLayoutComponent } from './components/LoginComponets/LoginLayout/LoginLayout.component';
+import { RegisterComponent } from './components/LoginComponets/RegisterForm/Register.component';
 import { isLogGuard } from './guards/IsLog.guard';
 import { isnotLogGuard } from './guards/IsnotLog.guard';
-import { ChatListComponent } from './components/ChatList/ChatList.component';
-import { NewFriendsComponent } from './components/NewFriends/NewFriends.component';
-import { FriendShipReqComponent } from './components/FriendShipReq/FriendShipReq.component';
+import { ChatListComponent } from './components/ChatCards/ChatList/ChatList.component';
+import { NewFriendsComponent } from './components/FriendsComponets/NewFriends/NewFriends.component';
+import { FriendShipReqComponent } from './components/FriendsComponets/FriendShipReq/FriendShipReq.component';
 
 
 const routes: Routes = [

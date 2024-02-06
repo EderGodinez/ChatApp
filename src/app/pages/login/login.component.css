@@ -3,6 +3,17 @@
 :host{
   height: 100%;
 }
+.form-floating{
+  position:relative;
+}
+.form-floating i{
+  cursor: pointer;
+  z-index: 4;
+  color: black;
+  position:absolute;
+  right: 15px;
+  top: 15px;
+}
 .form-control{
   width: 80%;
   border-radius: 30px;

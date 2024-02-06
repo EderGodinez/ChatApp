@@ -1,0 +1,36 @@
+:host {
+  display: block;
+  padding: 0 5px 0 5px ;
+  :hover{
+    background-color: rgba(49, 49, 49,.5);
+  }
+  :hover * {
+    pointer-events: none;
+  }
+}
+#previewCard{
+  cursor: pointer;
+}
+img{
+  z-index: 0;
+  min-width: 40px;
+  max-width: 45px;
+  min-height: 40px;
+  max-height: 45px;
+aspect-ratio: 1 / 1;
+overflow: hidden;
+border-radius: 50%;
+}
+.inactive-status{
+  z-index: 1;
+  position: absolute;
+  right: 5%;
+  top: 3%;
+  background-color:rgb(139, 139, 137);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.active{
+  background-color:rgb(114, 216, 66);
+}

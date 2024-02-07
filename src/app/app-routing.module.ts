@@ -10,7 +10,7 @@ import { isLogGuard } from './guards/IsLog.guard';
 import { isnotLogGuard } from './guards/IsnotLog.guard';
 import { ChatListComponent } from './components/ChatCards/ChatList/ChatList.component';
 import { NewFriendsComponent } from './components/FriendsComponets/NewFriends/NewFriends.component';
-import { FriendShipReqComponent } from './components/FriendsComponets/FriendShipReq/FriendShipReq.component';
+import { FriendShipReqComponent } from './components/FriendsComponets/FriendShipReqList/FriendShipReq.component';
 
 
 const routes: Routes = [

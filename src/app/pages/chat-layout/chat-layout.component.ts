@@ -2,9 +2,13 @@ import { LoaderComponent } from '../../components/extras/loader/loader.component
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ChatMenuComponent } from 'src/app/components/extras/ChatMenu/ChatMenu.component';
+import { ToatsComponent } from 'src/app/components/extras/toats/toats.component';
 import { MessageListComponent } from 'src/app/components/messages/messageList/messageList.component';
 import { option } from 'src/app/interfaces/ChatOptions.interface';
+import { MessageProperties } from 'src/app/interfaces/MessageProperties.interface';
+import { ActionsService } from 'src/app/services/actions.service';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -15,9 +19,11 @@ import { AuthService } from 'src/app/services/auth.service';
     LoaderComponent,
     RouterModule,
     ChatMenuComponent,
-    MessageListComponent
+    MessageListComponent,
+    ToatsComponent
   ],
   template: `
+  <toats-component [MessageProp]="Message"/>
   <div  *ngIf="Isload; else Loader" class="bg-dark d-flex" style="height: 100vh;width:100vw">
   <!-- chats y menu -->
   <div class="col-4 h-100 d-flex flex-column justify-content-between" style="border-right: 1px solid grey;">
@@ -66,23 +72,40 @@ import { AuthService } from 'src/app/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatLayoutComponent implements OnInit {
-  constructor(private Auth:AuthService,private cdr: ChangeDetectorRef,private Router:Router){
+  constructor(private Auth:AuthService,private cdr: ChangeDetectorRef,private Router:Router,
+     private ActionsService:ActionsService){
 
   }
+  private messageSubscription: Subscription | undefined;
+
   ChatOptions:option[]=[
     {icon:"bi bi-chat",Link:"chats",OptionName:"Chats"},
     {icon:"bi bi-person-add",Link:"Addfriends",OptionName:"Buscar"},
     {icon:"bi bi-chat-square-heart",Link:"request",OptionName:"Peticiones"}
   ]
+  Message:MessageProperties={
+    Content:"",
+    ImageUrl:"",
+    Issue:""
+  }
   Isload:boolean=false
   ngOnInit(): void {
   this.UserActive()
+  this.messageSubscription = this.ActionsService.message$.subscribe((message: MessageProperties) => {
+    this.ShowToast();
+  });
   }
   UserActive(){
     setTimeout(() => {
       this.Isload=true
       this.cdr.detectChanges();
     }, 1000);
+
+  }
+  ngOnDestroy() {
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
   }
   SignOut(){
     console.log('cerraste sesion',this.Auth.User.displayName)
@@ -91,5 +114,8 @@ export class ChatLayoutComponent implements OnInit {
     setTimeout(() => {
       this.Router.navigate(['Inicio'])
     }, 2000);
+  }
+  ShowToast(){
+    this.Message=this.ActionsService.message
   }
  }

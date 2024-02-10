@@ -8,6 +8,9 @@ import {GoogleAuthProvider,FacebookAuthProvider,GithubAuthProvider} from 'fireba
 import { LoginButtonComponent } from '../../components/LoginComponets/loginButton/loginbutton.component';
 import { ValidatorService } from 'src/app/validators/validators.service';
 import { AuthService } from './../../services/auth.service';
+import { ActionsService } from 'src/app/services/actions.service';
+import { UserService } from 'src/app/services/user.service';
+
 
 @Component({
   selector: 'login-component',
@@ -53,17 +56,20 @@ import { AuthService } from './../../services/auth.service';
 
   </div>
 
+
   `,
   styleUrls: ['./login.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
-  constructor(private FB:FormBuilder,private ValidatorService:ValidatorService,private AuthService:AuthService,private Router:Router){
+  constructor(private FB:FormBuilder,private ValidatorService:ValidatorService,private UserService:UserService,
+    private AuthService:AuthService,private Router:Router,private ActionsService:ActionsService){
   }
   LoginForm:FormGroup=this.FB.group({
     email:["",[Validators.required]],
     password:["",[Validators.required]]
   })
+
   @ViewChild('password')
   inputpassword!:ElementRef
   @ViewChild('hide')
@@ -95,7 +101,20 @@ export class LoginComponent {
       const credential = FacebookAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken;
       localStorage.setItem('user',JSON.stringify(user))
-      this.Router.navigateByUrl(`user/${user.uid}/chats`)
+      //Se muestra toast
+      this.ShowMessage(user.displayName)
+      this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
+        next:(value)=> {
+          this.UserService.User=value
+        },
+        error:(err)=> {
+          console.error(err)
+        },
+        complete:()=> {
+
+          this.Router.navigateByUrl(`${user.uid}/chats`)
+        },
+      })
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -112,7 +131,21 @@ export class LoginComponent {
       const token = credential?.accessToken;
       const user = result.user;
       localStorage.setItem('user',JSON.stringify(user))
-      this.Router.navigateByUrl(`user/${user.uid}/chats`)
+      //Se muestra toast
+      this.ShowMessage(user.displayName)
+        this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
+          next:(value)=> {
+            this.UserService.User=value
+          },
+          error:(err)=> {
+            console.error(err)
+          },
+          complete:()=> {
+
+            this.Router.navigateByUrl(`${user.uid}/chats`)
+          },
+        })
+
     }).catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -124,16 +157,33 @@ export class LoginComponent {
     this.LoginForm.get('password')?.setErrors(null)
     this.AuthService.SignInWithGitHub().then((result) => {
       const user = result.user;
+      console.log(user)
       const credential =GithubAuthProvider.credentialFromResult(result);
       const accessToken = credential?.accessToken;
       localStorage.setItem('user',JSON.stringify(user))
-      this.Router.navigateByUrl(`user/${user.uid}/chats`)
+      //Se muestra toast
+      this.ShowMessage(user.displayName)
+      this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
+        next:(value)=> {
+          this.UserService.User=value
+        },
+        error:(err)=> {
+          console.error(err)
+        },
+        complete:()=> {
+
+          this.Router.navigateByUrl(`${user.uid}/chats`)
+        },
+      })
     })
     .catch((error) => {
       const errorCode = error.code;
-      const errorMessage = error.message;
-      const email = error.customData.email;
-      const credential = GithubAuthProvider.credentialFromError(error);
+      if (errorCode==='auth/account-exists-with-different-credential') {
+        this.ActionsService.message={Issue:"Error",Content:"El correo ya esta vinculado a una cuenta"}
+      }
+      else{
+        this.ActionsService.message={Issue:"Error innesperado",Content:"Ah ocurrido un error al intentar iniciar sesion intentelo con una cuenta diferente"}
+      }
 
     });
   }
@@ -146,6 +196,20 @@ export class LoginComponent {
       .then((userCredential) => {
         const user = userCredential.user;
       localStorage.setItem('user',JSON.stringify(user))
+      //Se muestra toast
+      this.ShowMessage(user.displayName)
+      this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
+        next:(value)=> {
+          this.UserService.User=value
+        },
+        error:(err)=> {
+          console.error(err)
+        },
+        complete:()=> {
+
+          this.Router.navigateByUrl(`${user.uid}/chats`)
+        },
+      })
       })
       .catch((error) => {
         switch(error.message){
@@ -159,6 +223,12 @@ export class LoginComponent {
 
       });
     }
+  }
+  ShowMessage(username:string|null){
+  this.ActionsService.message={
+    Content:`Bienvenido ${username}`,
+    Issue:"Inicio de sesion exitoso"
+  }
   }
 
 

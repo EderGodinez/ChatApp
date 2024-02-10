@@ -41,7 +41,7 @@ export class FriendShipReqComponent {
       ImageUrl:`${$event.ImageUrl}`,
       Issue:"Nuevo amigo"
     }
-    console.log($event)
+   
   }
   DeleteRequest($event:any){
     this.ActionsService.message={
@@ -49,6 +49,6 @@ export class FriendShipReqComponent {
       ImageUrl:`${$event.ImageUrl}`,
       Issue:"Elimminacion de solicitud"
     }
-    console.log($event)
+
   }
  }

@@ -1,9 +1,12 @@
 export interface User{
   uid:string
   FriendshipRequest:string[]
-  Friends:string[]
+  Friends:Friends[]
   displayName:string
   IsActive:boolean
   photoURL:string
-  providerId:string
+}
+interface Friends{
+uid:string
+roomId:string
 }

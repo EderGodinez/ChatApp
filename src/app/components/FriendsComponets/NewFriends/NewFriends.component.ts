@@ -1,8 +1,12 @@
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NewFriendItemComponent } from '../../extras/NewFriendItem/NewFriendItem.component';
+import { UserService } from 'src/app/services/user.service';
+import { map} from 'rxjs';
+interface userSearch{
 
+}
 @Component({
   selector: 'app-new-friends',
   standalone: true,
@@ -32,20 +36,37 @@ import { NewFriendItemComponent } from '../../extras/NewFriendItem/NewFriendItem
   styleUrls: ['./NewFriends.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NewFriendsComponent {
+export class NewFriendsComponent implements OnInit {
+  constructor(private UserService:UserService){}
+  ngOnInit(): void {
+    this.UserService.GetusersList('')
+    .pipe(
+      map((users)=>{
+        return users.map(user => ({ photoURL: user.photoURL, displayName: user.displayName,uid:user.uid }))
+      })
+    ).subscribe({
+      next:(users)=> {
+        this.filterUser=users
+      },
+    })
+  }
   @ViewChild('Search')
   $searchUsers!:ElementRef
-  filterUser:any[]=[
-    {
-      ImageUrl:"assets/images/default-user.jpg",
-      projectName:"Nicole Salazar"
-  },{
-    ImageUrl:"assets/images/default-user.jpg",
-    projectName:"Eder Godinez"
-  }]
-  searchFriend(){
+  filterUser:userSearch[]=[]
 
-   console.log('impresion',this.$searchUsers.nativeElement.value)
+  searchFriend(){
+    console.log(this.filterUser)
+    console.log('impresion',this.$searchUsers.nativeElement.value)
+    this.UserService.GetusersList(this.$searchUsers.nativeElement.value)
+    .pipe(
+      map((users)=>{
+        return users.map(user => ({ photoURL: user.photoURL, displayName: user.displayName,uid:user.uid }))
+      })
+    ).subscribe({
+      next:(users)=> {
+        this.filterUser=users
+      },
+    })
   }
 
 }

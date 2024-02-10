@@ -12,7 +12,7 @@ declare const bootstrap: any;
   <div class="toast-container position-fixed top-0 end-0 p-3">
   <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
-      <img [src]="MessageProp.ImageUrl" width="30" height="30" class="me-2" alt="..." style="border-radius: 50%;">
+      <img *ngIf="MessageProp.ImageUrl" [src]="MessageProp.ImageUrl" width="30" height="30" class="me-2" alt="..." style="border-radius: 50%;">
       <strong class="me-auto">{{MessageProp.Issue}}</strong>
       <small>ahora</small>
       <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -40,7 +40,7 @@ export class ToatsComponent implements OnChanges{
       toastBootstrap.show()
     setTimeout(() => {
       toastBootstrap.hide()
-    }, 3000);
+    }, 5000);
     }
 
   }

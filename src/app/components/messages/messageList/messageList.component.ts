@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MessageItemComponent } from '../messageItem/messageItem.component';
 
+
 @Component({
   selector: 'message-list',
   standalone: true,
@@ -27,7 +28,7 @@ export class MessageListComponent {
       messageContent:"Hola soy eder que tal estas , esta es una prueba de de mensaje para probar la burbuja del chat jajjajhdk shakjdhajkg skjagjww ldlskjdk ljskdjskljdkl s",
     },
     {
-      emmiterid:"2",
+      emmiterid:"WcOG22B7k4gYHzBKVFDOWpvF3iB3",
       dateSent:new Date(),
       messageContent:"Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
     },
@@ -37,12 +38,12 @@ export class MessageListComponent {
       messageContent:"Hola soy eder que tal estas , esta es una prueba de de mensaje para probar la burbuja del chat jajjajhdk shakjdhajkg skjagjww ldlskjdk ljskdjskljdkl s",
     },
     {
-      emmiterid:"1",
+      emmiterid:"WcOG22B7k4gYHzBKVFDOWpvF3iB3",
       dateSent:new Date(),
       messageContent:"Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
     }
   ]
-  get UserId():number{
-    return this.UserService.User._id
+  get UserId():string{
+    return this.UserService.User.uid
   }
 }

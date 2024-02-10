@@ -8,20 +8,13 @@ import { Router } from '@angular/router';
 import { User } from '../interfaces/user.interface';
 import { environments } from 'src/env/environments';
 import { Observable } from 'rxjs';
+import { UserService } from './user.service';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-  constructor(private Http:HttpClient) { }
+  constructor(private Http:HttpClient,private UserService:UserService) { }
   private API_URL=environments.API_URL
-  User:User={
-      displayName:"",
-      Friends:[],
-      FriendshipRequest:[],
-      IsActive:false,
-      photoURL:"",
-      providerId:"",
-      uid:"",
-  }
+
 CreateUser(email:string,password:string){
 return createUserWithEmailAndPassword(auth, email, password)
 }
@@ -29,7 +22,7 @@ SignIn(email:string,password:string){
   return signInWithEmailAndPassword(auth, email, password)
 }
 LogOut(){
-  this.ResetUser()
+  this.UserService.ResetUser()
   signOut(auth)
   localStorage.removeItem('user')
 }
@@ -55,17 +48,7 @@ SignInWithFacebook(){
   SignInWithGitHub(){
     return  signInWithPopup(auth, Githubprovider)
     }
-ResetUser(){
-  this.User={
-    displayName:"",
-    Friends:[],
-    FriendshipRequest:[],
-    IsActive:false,
-    photoURL:"",
-    providerId:"",
-    uid:"",
-}
-}
+
 getUserById(userId:string):Observable<User>{
   return this.Http.get<User>(`${this.API_URL}/users/${userId}`)
 }

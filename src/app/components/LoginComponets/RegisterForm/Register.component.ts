@@ -1,9 +1,12 @@
+import { UserService } from 'src/app/services/user.service';
 
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { ValidatorService } from 'src/app/validators/validators.service';
+import { ActionsService } from 'src/app/services/actions.service';
+
 
 @Component({
   selector: 'app-register',
@@ -19,11 +22,11 @@ import { ValidatorService } from 'src/app/validators/validators.service';
     <hr>
 </h1>
 <form class="d-flex flex-wrap" [formGroup]="RegisterForm" (submit)="Register()" >
-<div class="form-floating my-3 w-100" [ngClass]="IsValidField('ProjectName') ? 'invalid-field' : ''" >
-  <input type="text" class="form-control" id="floatingPassword"style="width:100%" formControlName="ProjectName">
+<div class="form-floating my-3 w-100" [ngClass]="IsValidField('projectName') ? 'invalid-field' : ''" >
+  <input type="text" class="form-control" id="floatingPassword"style="width:100%" formControlName="projectName">
   <label for="floatingPassword">Nombre de usuario</label>
 </div>
-<small *ngIf="IsValidField('ProjectName')"style="color:red">{{getMessageError('ProjectName')}}</small>
+<small *ngIf="IsValidField('projectName')"style="color:red">{{getMessageError('projectName')}}</small>
 <div class="form-floating my-3 w-100" [ngClass]="IsValidField('email') ? 'invalid-field' : ''">
   <input type="email" class="form-control" id="floatingInput"style="width:100%" formControlName="email" >
   <label for="floatingInput">Correo</label>
@@ -47,15 +50,17 @@ import { ValidatorService } from 'src/app/validators/validators.service';
 </form>
   <a href="Inicio/login">Iniciar sesion</a>
   </div>
+
   `,
   styleUrls: ['./Register.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
-  constructor(private FB:FormBuilder,private ValidatorService:ValidatorService,private Auth:AuthService){
+  constructor(private FB:FormBuilder,private ValidatorService:ValidatorService,private Auth:AuthService,
+    private UserService:UserService,private ActionsService:ActionsService){
   }
   public RegisterForm:FormGroup=this.FB.group({
-    ProjectName:["",[Validators.required,Validators.minLength(6)]],
+    projectName:["",[Validators.required,Validators.minLength(6)]],
     email:["",[Validators.pattern(this.ValidatorService.emailPattern),Validators.required]],
     password:["",[Validators.required,Validators.minLength(10)]],
     confirmPass:["",[Validators.required]],
@@ -101,10 +106,26 @@ export class RegisterComponent {
     this.RegisterForm.get('confirmPass')?.setErrors(null)
     this.AreEquals('password','confirmPass')
     if (this.RegisterForm.valid) {
-      const {email,password}=this.RegisterForm.value
+      const {email,password,projectName}=this.RegisterForm.value
       this.Auth.CreateUser(email,password)
       .then((userCredential) => {
-        const user = userCredential.user;
+        const {email,uid}=userCredential.user
+        ///Se registra en nuestro backend de mongo
+        this.UserService.RegisterUser({displayName:this.RegisterForm.get('projectName')?.value,email,uid}).subscribe({
+          next:(value)=> {
+            console.log(value)
+            this.ActionsService.message={
+              Content:`Cuenta a nombre de ${projectName} registrada con exito`,
+              Issue:"Registro exitoso"
+            }
+          },
+          error:(err)=> {
+            this.ActionsService.message={
+              Content:"Ocurrio un error al realizar el registro",
+              Issue:"Error"
+            }
+          },
+        })
       })
       .catch((error) => {
         const errorCode = error.code;

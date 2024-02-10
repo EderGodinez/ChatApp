@@ -2,6 +2,7 @@ import { UserService } from './../../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 
+
 @Component({
   selector: 'message-item',
   standalone: true,
@@ -23,13 +24,11 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 export class MessageItemComponent implements OnInit {
   constructor(private UserService:UserService){}
   ngOnInit(): void {
-    console.log('creado')
-    console.log(this.message)
   }
   @Input()
   message!:any
    get IsmessageOwnner():boolean{
-    console.log()
-    return this.UserService.User._id===this.message.emmiterid
+
+    return this.UserService.User.uid===this.message.emmiterid
   }
 }

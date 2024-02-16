@@ -13,14 +13,17 @@ export class UserService {
   }
   User:User={
     displayName:"",
-    Friends:[],
+    Friends:{},
     FriendshipRequest:[],
     IsActive:false,
     photoURL:"",
-    uid:"",
+    uid:""
 }
   private Url=environments.API_URL
-
+AddFriend(uuid:string){
+  this.User.Friends[uuid]=''
+  console.log(this.User.Friends)
+}
   GetUserinfoById(id:string):Observable<User>{
    return this.httpClient.get<User>(`${this.Url}/users/${id}`)
   }
@@ -30,10 +33,19 @@ export class UserService {
   GetusersList(query:string):Observable<User[]>{
     return this.httpClient.get<User[]>(`${this.Url}/users/list?search=${query}&except=${this.User.uid}`)
   }
-  ResetUser(){
+  //Enviar y cancelar peticiones de amistad
+  DeleteFriendShipRequest():Observable<User>{
+    return this.httpClient.put<User>(`${this.Url}/users/request`,this.User)
+  }
+  //Aceptar o eliminar peticiones
+  ModifyFriendsList():Observable<User>{
+    return this.httpClient.put<User>(`${this.Url}/users/friends`,this.User)
+  }
+
+    ResetUser(){
     this.User={
       displayName:"",
-      Friends:[],
+      Friends:{},
       FriendshipRequest:[],
       IsActive:false,
       photoURL:"",

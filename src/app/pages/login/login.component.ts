@@ -96,16 +96,17 @@ export class LoginComponent {
   SignInWithFacebook(){
     this.LoginForm.get('password')?.setErrors(null)
     this.AuthService.SignInWithFacebook()
-    .then((result) => {
+    .then(async (result) => {
       const user = result.user;
-      const credential = FacebookAuthProvider.credentialFromResult(result);
-      const accessToken = credential?.accessToken;
+      const tokenAccess=await user.getIdToken().then((token)=>{
+        return token
+      })
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
       this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
-        next:(value)=> {
-          this.UserService.User=value
+        next:(user)=> {
+          this.UserService.User=user
         },
         error:(err)=> {
           console.error(err)
@@ -126,16 +127,17 @@ export class LoginComponent {
   SignInWithGoogle(){
     this.LoginForm.get('password')?.setErrors(null)
     this.AuthService.SignInWithGoogle()
-    .then((result) => {
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential?.accessToken;
+    .then(async (result) => {
       const user = result.user;
+      const tokenAccess=await user.getIdToken().then((token)=>{
+        return token
+      })
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
         this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
-          next:(value)=> {
-            this.UserService.User=value
+          next:(user)=> {
+            this.UserService.User=user
           },
           error:(err)=> {
             console.error(err)
@@ -155,17 +157,17 @@ export class LoginComponent {
   }
   SignInWithGitHub(){
     this.LoginForm.get('password')?.setErrors(null)
-    this.AuthService.SignInWithGitHub().then((result) => {
+    this.AuthService.SignInWithGitHub().then(async (result) => {
       const user = result.user;
-      console.log(user)
-      const credential =GithubAuthProvider.credentialFromResult(result);
-      const accessToken = credential?.accessToken;
+      const tokenAccess=await user.getIdToken().then((token)=>{
+        return token
+      })
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
       this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
-        next:(value)=> {
-          this.UserService.User=value
+        next:(user)=> {
+          this.UserService.User=user
         },
         error:(err)=> {
           console.error(err)
@@ -193,14 +195,17 @@ export class LoginComponent {
     if (this.LoginForm.valid) {
       const {email,password}=this.LoginForm.value
       this.AuthService.SignIn(email,password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
+        const tokenAccess=await user.getIdToken().then((token)=>{
+          return token
+        })
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
       this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
-        next:(value)=> {
-          this.UserService.User=value
+        next:(user)=> {
+          this.UserService.User=user
         },
         error:(err)=> {
           console.error(err)

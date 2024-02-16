@@ -7,26 +7,6 @@
   display: flex;
   font-family: 'Raleway', sans-serif;
 }
-#chat-user{
-  color: #ffffff;
-  background-color: #313539;
-  box-shadow: 10px 3px 10px black;
-  position: sticky;
-}
-#chat-user img{
-  min-width: 40px;
-  max-width: 5%;
-}
-#messageinput{
-  border: 1px solid rgba(72, 72, 95,.8);
-  border-radius: 10px;
-  padding: 10px;
-  font-size: 12px;
-}
-
-#messageinput:focus{
-  outline: rgb(85, 104, 109) auto 1px;
-}
 #routerContainer{
   flex-grow: 1;
 }
@@ -58,43 +38,4 @@ border-radius: 50%;
   cursor: pointer;
  color: rgb(62, 62, 126);
 }
-#messages{
-  transition: 1s linear;
-}
-#messages::-webkit-scrollbar{
-  width: 10px;
-}
-#messages::-webkit-scrollbar-thumb{
-  background-color: rgba(135, 131, 131,1);
-  border-radius: 10px;
-  transition: background-color 1s linear;
-}
 
-#messages::-webkit-scrollbar-thumb:hover {
-  background-color: rgb(107, 103, 103);
-}
-.inactive-status{
-  width: auto;
-  left: 30px;
-  z-index: 1;
-  right: 5px;
-  position: absolute;
-  background-color:rgb(139, 139, 137);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-.active{
-  background-color:rgb(114, 216, 66);
-}
-
-.transparent{
-  border: 1px solid rgba(200, 200, 200, .5);
-  right: 5px;
-  top:5px;
-   border-radius:50%
-
-}
-.transparent:active{
-  outline: 1px solid  rgb(67, 67, 67);
-}

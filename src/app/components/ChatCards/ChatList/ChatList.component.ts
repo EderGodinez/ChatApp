@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {  RouterModule } from '@angular/router';
 import { previewChatComponent } from "../ChatCard/Chat-card.component";
+import { UserService } from 'src/app/services/user.service';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
     selector: 'app-chat-list',
@@ -14,15 +15,21 @@ import { previewChatComponent } from "../ChatCard/Chat-card.component";
         <i class="bi bi-search position-absolute z-1" style="right: 10px;top:15px;  color:white;" ></i>
       </div>
     </div>
-    <ul class="list" *ngIf="filterChats.length>0;else NoChats">
-      <li *ngFor="let chatpreview of filterChats">
-        <previewChats/>
-      </li>
-    </ul>
+    <ul class="list" *ngIf="ChatKeys.length > 0; else NoChats">
+  <li *ngFor="let chatId of ChatKeys; let i = index">
+    <previewChats [UserId]="chatId" (click)="SelectChat(chatId,filterChats[chatId])" />
+  </li>
+</ul>
     <ng-template #NoChats>
-      <div style="padding:10px;" class="text-center">
-        <span>No hay se encontraron chats</span>
-      </div>
+
+
+        <div class="m-3 text-center">
+          <span>No hay se encontraron chats</span>
+        </div>
+        <div id="NoChat" style="padding:10px;" class="text-center" [routerLink]="'/'+UserId+'/Addfriends'">
+          <h6>Agregar contactos <i class="bi bi-person-fill-add"></i><hr style="width:50%;transform: translate(50%,0px);margin-top:10px;"></h6>
+        </div>
+
     </ng-template>
 
   `,
@@ -30,14 +37,32 @@ import { previewChatComponent } from "../ChatCard/Chat-card.component";
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CommonModule,
-        previewChatComponent
+        previewChatComponent,
+        RouterModule
     ]
 })
-export class ChatListComponent {
+export class ChatListComponent implements OnInit {
+  constructor(private UserService:UserService,private Chat:ChatService,private cdr: ChangeDetectorRef){}
+  ngOnInit(): void {
+    this.filterChats=this.UserService.User.Friends
+    this.cdr.detectChanges()
+  }
+
   @ViewChild('Search')
   $searchChat!:ElementRef
-  filterChats:string[]=[""]
+  filterChats:Record<string,string>={}
   searchChat(){
     console.log(this.$searchChat.nativeElement.value)
+
   }
+  SelectChat(userId:string,chatId:string){
+    this.Chat.SetCurrentChat({chatId,userId})
+  }
+  get UserId(){
+    return this.UserService.User.uid
+  }
+  get ChatKeys():string[]{
+    return  Object.keys(this.filterChats)
+  }
+
    }

@@ -1,11 +1,11 @@
 import { LoaderComponent } from '../../components/extras/loader/loader.component';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {  Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChatMenuComponent } from 'src/app/components/extras/ChatMenu/ChatMenu.component';
 import { ToatsComponent } from 'src/app/components/extras/toats/toats.component';
-import { MessageListComponent } from 'src/app/components/messages/messageList/messageList.component';
+import { MessagesAreaComponent } from 'src/app/components/messages/MessagesArea/MessagesArea.component';
 import { option } from 'src/app/interfaces/ChatOptions.interface';
 import { InfoUser } from 'src/app/interfaces/InfoUser.interface';
 import { MessageProperties } from 'src/app/interfaces/MessageProperties.interface';
@@ -22,8 +22,8 @@ import { UserService } from 'src/app/services/user.service';
     LoaderComponent,
     RouterModule,
     ChatMenuComponent,
-    MessageListComponent,
-    ToatsComponent
+    ToatsComponent,
+    MessagesAreaComponent
   ],
   template: `
   <toats-component [MessageProp]="Message"/>
@@ -42,25 +42,8 @@ import { UserService } from 'src/app/services/user.service';
     </div>
     <chat-menu [Options]="ChatOptions"/>
   </div>
-  <div class="col-8 h-100 px-3 py-2" *ngIf="ChatId!=='';else noChatSelected" >
-    <div class="h-100 w-100 bg-white rounded d-flex gap-2 flex-column justify-content-between">
-        <div class="d-flex align-items-center justify-content-start m-0 p-2 text-center" id="chat-user">
-          <div class="position-relative d-flex" style=" min-width: 40px;max-width: 9%;">
-            <img src="assets/images/default-user.jpg" alt="User image">
-            <span class="inactive-status active"></span>
-          </div>
-          <span class="">Nombre de amigo</span>
-        </div>
-        <div class="flex-grow-1" id="messages"  style="overflow-x:hidden;">
-        <message-list></message-list>
-        </div>
-        <div class="w-100 p-3">
-            <div class="position-relative">
-              <input type="text"  placeholder="Mensaje...." class="w-100" id="messageinput">
-              <button class="position-absolute transparent"><i class="bi bi-send"></i></button>
-            </div>
-        </div>
-    </div>
+  <div class="col-8 h-100 px-3 py-2" *ngIf="roomValue!=='';else noChatSelected" >
+  <messages-area [FriendId]="roomValue"></messages-area>
   </div>
 </div>
 
@@ -84,6 +67,7 @@ export class ChatLayoutComponent implements OnInit {
   constructor(private Auth:AuthService,private cdr: ChangeDetectorRef,private Router:Router,private Chat:ChatService,
      private ActionsService:ActionsService,private UserService:UserService){}
   private messageSubscription: Subscription | undefined;
+  roomValue:string|undefined
 UserInfo:InfoUser={
 displayName:"",
 photoURL:""
@@ -115,6 +99,9 @@ if (userString) {
   complete:()=> {
     this.UserActive()
   },})
+  this.Chat.room$.subscribe((room)=>{
+    this.roomValue=room.userId?room.userId:""
+  })
   const {displayName,photoURL}=this.UserService.User
   this.UserInfo={displayName,photoURL}
   this.messageSubscription = this.ActionsService.message$.subscribe((message: MessageProperties) => {
@@ -141,7 +128,5 @@ if (userString) {
   ShowToast(){
     this.Message=this.ActionsService.message
   }
-  get ChatId():string{
-    return this.Chat.currentChat
-  }
+
  }

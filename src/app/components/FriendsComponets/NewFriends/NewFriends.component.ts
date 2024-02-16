@@ -4,9 +4,8 @@ import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } fro
 import { NewFriendItemComponent } from '../../extras/NewFriendItem/NewFriendItem.component';
 import { UserService } from 'src/app/services/user.service';
 import { map} from 'rxjs';
-interface userSearch{
+import { NewFriend } from 'src/app/interfaces/NewFriend.initerface';
 
-}
 @Component({
   selector: 'app-new-friends',
   standalone: true,
@@ -52,11 +51,10 @@ export class NewFriendsComponent implements OnInit {
   }
   @ViewChild('Search')
   $searchUsers!:ElementRef
-  filterUser:userSearch[]=[]
+  filterUser:NewFriend[]=[]
 
   searchFriend(){
-    console.log(this.filterUser)
-    console.log('impresion',this.$searchUsers.nativeElement.value)
+    console.log(this.$searchUsers.nativeElement.value)
     this.UserService.GetusersList(this.$searchUsers.nativeElement.value)
     .pipe(
       map((users)=>{

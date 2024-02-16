@@ -24,7 +24,7 @@ SignIn(email:string,password:string){
 LogOut(){
   this.UserService.ResetUser()
   signOut(auth)
-  localStorage.removeItem('user')
+  localStorage.clear()
 }
 ValidateUserSession(){
   onAuthStateChanged(auth, (user) => {

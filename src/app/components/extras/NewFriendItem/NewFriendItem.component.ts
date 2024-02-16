@@ -1,7 +1,7 @@
-import { User } from './../../../interfaces/user.interface';
+
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { userSearch } from 'src/app/interfaces/searchUser.interface';
+import { NewFriend } from 'src/app/interfaces/NewFriend.initerface';
 import { ActionsService } from 'src/app/services/actions.service';
 
 @Component({
@@ -32,13 +32,14 @@ export class NewFriendItemComponent implements OnInit {
    // console.log(this.User)
   }
   @Input()
-  User:any={
+  User:NewFriend={
     displayName:"",
     photoURL:"",
     uid:""
   }
   public Sent:boolean=false
   SentRequest(){
+
     this.ActionsService.message={
       Content:`Se ah enviado la solicitud a ${this.User.displayName}`,
       ImageUrl:this.User.photoURL,

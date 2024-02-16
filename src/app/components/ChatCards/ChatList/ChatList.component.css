@@ -20,3 +20,12 @@ input{
   outline: none;
   color: white;
 }
+#NoChat{
+  cursor: pointer;
+  transition: all .5s linear 0s;
+  color: white;
+}
+#NoChat:hover{
+  cursor: pointer;
+  color: aqua;
+}

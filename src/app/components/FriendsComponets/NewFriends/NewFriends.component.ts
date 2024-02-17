@@ -1,6 +1,6 @@
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NewFriendItemComponent } from '../../extras/NewFriendItem/NewFriendItem.component';
 import { UserService } from 'src/app/services/user.service';
 import { map} from 'rxjs';
@@ -15,28 +15,36 @@ import { NewFriend } from 'src/app/interfaces/NewFriend.initerface';
     FormsModule
   ],
   template: `
-   <div class="d-flex w-100 justify-content-between">
+   <div class="d-flex w-100 justify-content-between" *ngIf="IsLoad">
       <div class="position-relative" style="width: 95%;padding-left:1rem">
         <input type="text" placeholder="Buscar...." (change)="searchFriend()" #Search >
         <i class="bi bi-search position-absolute z-1" style="right: 10px;top:15px;  color:white;" ></i>
       </div>
     </div>
-    <ul class="list" *ngIf="filterUser.length>0;else NoUsers">
+    <ul class="list" *ngIf="TheresUsers">
       <li *ngFor="let newFriend of filterUser">
         <new-friend-item [User]="newFriend"/>
       </li>
     </ul>
-    <ng-template #NoUsers>
-      <div style="padding:10px;" class="text-center">
-        <span class="text-white">Usuario no encontrado</span>
+
+      <div class="d-flex justify-content-center align-content-center flex-wrap h-100"  *ngIf="!IsLoad">
+        <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
       </div>
-    </ng-template>
+      <div *ngIf="NoUsers">
+        <div style="padding:10px;" class="text-center">
+          <span class="text-white">Usuario no encontrado</span>
+        </div>
+      </div>
+
+
   `,
   styleUrls: ['./NewFriends.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewFriendsComponent implements OnInit {
-  constructor(private UserService:UserService){}
+  constructor(private UserService:UserService,private cdr: ChangeDetectorRef){}
   ngOnInit(): void {
     this.UserService.GetusersList('')
     .pipe(
@@ -45,16 +53,19 @@ export class NewFriendsComponent implements OnInit {
       })
     ).subscribe({
       next:(users)=> {
-        this.filterUser=users
+          this.filterUser=users
+          this.IsLoad=true
+          this.cdr.detectChanges()
       },
     })
   }
   @ViewChild('Search')
   $searchUsers!:ElementRef
   filterUser:NewFriend[]=[]
-
+  IsLoad:boolean=false
   searchFriend(){
-    console.log(this.$searchUsers.nativeElement.value)
+    this.IsLoad=false
+    this.cdr.detectChanges()
     this.UserService.GetusersList(this.$searchUsers.nativeElement.value)
     .pipe(
       map((users)=>{
@@ -63,8 +74,16 @@ export class NewFriendsComponent implements OnInit {
     ).subscribe({
       next:(users)=> {
         this.filterUser=users
+        this.IsLoad=true
+        this.cdr.detectChanges()
       },
     })
+  }
+  get TheresUsers(){
+    return this.filterUser.length>0&&this.IsLoad
+  }
+  get NoUsers(){
+    return this.filterUser.length===0&&this.IsLoad
   }
 
 }

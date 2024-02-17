@@ -35,29 +35,13 @@ export class previewChatComponent implements OnInit{
   constructor(private UserService:UserService,private cdr: ChangeDetectorRef){
 
   }
-  ngOnInit(): void {
-    this.UserService.GetUserinfoById(this.UserId).pipe(
-      map((user)=>{ return { displayName: user.displayName, IsActive: user.IsActive,photoURL:user.photoURL }})
-    ).subscribe({
-       next:(user)=> {
-        this.SetInfoUser(user)
-        this.cdr.detectChanges()
-       },
-       error:(err)=> {
-        console.error(err)
-       },
-    })
-  }
+  ngOnInit(): void {}
   @Input()
-  UserId!:string
-
   Info:Preview={
     displayName:"",
     photoURL:"",
-    IsActive:false
-  }
-  SetInfoUser(Info:Preview){
-    this.Info=Info
+    IsActive:false,
+    uid:""
   }
   DateLastMessage:Date=new Date()
   PendientMessages:number=0

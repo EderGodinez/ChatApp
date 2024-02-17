@@ -13,8 +13,8 @@ import { Preview } from 'src/app/interfaces/PreviewCard.interface';
     MessageListComponent,
   ],
   template: `
-  <div class="h-100 w-100 bg-secondary rounded d-flex gap-2 flex-column justify-content-between">
-        <div class="d-flex align-items-center justify-content-start m-0 p-2 text-center" id="chat-user">
+  <div class="h-100 w-100 bg-secondary rounded d-flex gap-2 flex-column justify-content-between" *ngIf="Isload;else Loading">
+        <div class="d-flex align-items-center justify-content-start m-0 p-2 text-center" id="chat-user" >
           <div class="position-relative d-flex" style=" min-width: 40px;max-width: 9%;">
             <img [src]="DataUser.photoURL" alt="User image">
             <span class="inactive-status" [ngClass]="{'active':DataUser.IsActive}"></span>
@@ -31,6 +31,15 @@ import { Preview } from 'src/app/interfaces/PreviewCard.interface';
             </div>
         </div>
     </div>
+    <ng-template #Loading >
+        <div class="h-100 w-100 flex-wrap d-flex justify-content-center align-content-center">
+            <div class="d-flex justify-content-center">
+              <div class="spinner-border" role="status" style="width: 5rem;height:5rem">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+        </div>
+    </ng-template>
 
 
   `,
@@ -40,31 +49,36 @@ import { Preview } from 'src/app/interfaces/PreviewCard.interface';
 export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
   constructor(private UserService:UserService,private cdr: ChangeDetectorRef){}
   ngOnChanges(changes: SimpleChanges): void {
+    this.InitChat()
+  }
+  ngOnDestroy(): void {
+    console.log('Se destruyo el componente')
+  }
+  ngOnInit(): void {
+   this.InitChat()
+  }
+  @Input()
+  FriendId:any=''
+  Isload:boolean=false
+  DataUser:Preview={
+    displayName:"",
+    IsActive:false,
+    photoURL:"",
+    uid:""
+  }
+  InitChat(){
     this.UserService.GetUserinfoById(this.FriendId).pipe(
-      map((user)=>{return {displayName:user.displayName,photoURL:user.photoURL,IsActive:user.IsActive}})
+      map((user)=>{return {displayName:user.displayName,photoURL:user.photoURL,IsActive:user.IsActive,uid:user.uid}})
     ).subscribe({
       next:(inf)=> {
-        console.log(inf)
         this.DataUser=inf
-        this.cdr.detectChanges();
+          this.Isload=true
+          this.cdr.detectChanges();
       },
       error:(err)=> {
         console.error(err)
       },
     })
 
-  }
-  ngOnDestroy(): void {
-    console.log('Se destruyo el componente')
-  }
-  ngOnInit(): void {
-   console.log('init')
-  }
-  @Input()
-  FriendId:any=''
-  DataUser:Preview={
-    displayName:"",
-    IsActive:false,
-    photoURL:""
   }
 }

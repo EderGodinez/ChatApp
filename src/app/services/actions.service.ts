@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { MessageProperties } from '../interfaces/MessageProperties.interface';
 import { BehaviorSubject } from 'rxjs';
+import { UserService } from './user.service';
 
 @Injectable({providedIn: 'root'})
 export class ActionsService {
-  constructor() { }
+  constructor(private User:UserService) { }
   private _message = new BehaviorSubject<MessageProperties>({
   Content:"",
   ImageUrl:"",

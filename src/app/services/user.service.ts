@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environments } from 'src/env/environments';
 import { CreateUser } from '../interfaces/CreateUser.interface';
-import { User } from '../interfaces/user.interface';
+import { Request, User } from '../interfaces/user.interface';
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -34,12 +34,15 @@ AddFriend(uuid:string){
     return this.httpClient.get<User[]>(`${this.Url}/users/list?search=${query}&except=${this.User.uid}`)
   }
   //Enviar y cancelar peticiones de amistad
-  DeleteFriendShipRequest():Observable<User>{
-    return this.httpClient.put<User>(`${this.Url}/users/request`,this.User)
+  SentFriendShipRequest(RemitentId:string):Observable<User>{
+    return this.httpClient.patch<User>(`${this.Url}/users/SentRequest`,{uid:this.User.uid,RemitentId})
+  }
+  CancelFriendShipRequest(Remitent:string):Observable<User>{
+    return this.httpClient.patch<User>(`${this.Url}/users/CancelRequest`,{uid:this.User.uid,RemitentId:Remitent})
   }
   //Aceptar o eliminar peticiones
-  ModifyFriendsList():Observable<User>{
-    return this.httpClient.put<User>(`${this.Url}/users/friends`,this.User)
+  AddFriendsList():Observable<User>{
+    return this.httpClient.patch<User>(`${this.Url}/users/friends`,this.User)
   }
 
     ResetUser(){

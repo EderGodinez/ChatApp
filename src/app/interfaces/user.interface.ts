@@ -6,7 +6,8 @@ export interface User{
   IsActive:boolean
   photoURL:string
 }
-interface Request{
-  userId:string
-  DateSent:Date
+export interface Request{
+  EmmiterId:string
+    ReceptorId:string
+    DateSent?:Date
 }

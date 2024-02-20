@@ -2,15 +2,16 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 
-import { LoginComponent } from './pages/login/login.component';
-import { ChatLayoutComponent } from './pages/chat-layout/chat-layout.component';
-import { LoginLayoutComponent } from './components/LoginComponets/LoginLayout/LoginLayout.component';
-import { RegisterComponent } from './components/LoginComponets/RegisterForm/Register.component';
+import { LoginComponent } from './Auth/pages/login/login.component';
+import { ChatLayoutComponent } from './chat/pages/chat-layout/chat-layout.component';
+import { LoginLayoutComponent } from './Auth/components/LoginLayout/LoginLayout.component';
+import { RegisterComponent } from './Auth/pages/RegisterForm/Register.component';
 import { isLogGuard } from './guards/IsLog.guard';
 import { isnotLogGuard } from './guards/IsnotLog.guard';
-import { ChatListComponent } from './components/ChatCards/ChatList/ChatList.component';
-import { NewFriendsComponent } from './components/FriendsComponets/NewFriends/NewFriends.component';
-import { FriendShipReqComponent } from './components/FriendsComponets/FriendShipReqList/FriendShipReq.component';
+import { ChatListComponent } from './chat/pages/ChatList/ChatList.component';
+import { NewFriendsComponent } from './chat/pages/NewFriends/NewFriends.component';
+import { FriendShipReqComponent } from './chat/pages/FriendShipReqList/FriendShipReq.component';
+
 
 
 const routes: Routes = [

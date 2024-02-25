@@ -28,6 +28,7 @@ border-radius: 50%;
   outline: rgb(85, 104, 109) auto 1px;
 }
 #messages{
+  overflow-x: hidden;
   transition: 1s linear;
 }
 #messages::-webkit-scrollbar{

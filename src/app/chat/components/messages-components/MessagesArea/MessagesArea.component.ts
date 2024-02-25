@@ -1,9 +1,13 @@
 import { UserService } from 'src/app/services/user.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MessageListComponent } from '../messageList/messageList.component';
-import { map } from 'rxjs';
+import { Subscription, map } from 'rxjs';
 import { Preview } from 'src/app/interfaces/PreviewCard.interface';
+import { MessagesService } from 'src/app/services/messages.service';
+import { Message } from 'src/app/interfaces/Message.interface';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChatService } from 'src/app/services/chat.service';
 
 @Component({
   selector: 'messages-area',
@@ -11,9 +15,10 @@ import { Preview } from 'src/app/interfaces/PreviewCard.interface';
   imports: [
     CommonModule,
     MessageListComponent,
+    ReactiveFormsModule
   ],
   template: `
-  <div class="h-100 w-100 bg-secondary rounded d-flex gap-2 flex-column justify-content-between" *ngIf="Isload;else Loading">
+  <div class="h-100 w-100 bg-secondary rounded d-flex gap-2 flex-column justify-content-between" *ngIf="IsloadUserInfo;else Loading">
         <div class="d-flex align-items-center justify-content-start m-0 p-2 text-center" id="chat-user" >
           <div class="position-relative d-flex" style=" min-width: 40px;max-width: 9%;">
             <img [src]="DataUser.photoURL" alt="User image">
@@ -21,14 +26,17 @@ import { Preview } from 'src/app/interfaces/PreviewCard.interface';
           </div>
           <span class="">{{DataUser.displayName}}</span>
         </div>
-        <div class="flex-grow-1" id="messages"  style="overflow-x:hidden;">
-        <message-list></message-list>
+        <div class="flex-grow-1" id="messages">
+        <message-list [ChatId]="ChatId"></message-list>
         </div>
         <div class="w-100 p-3">
+          <form action="" [formGroup]="MessageForm">
             <div class="position-relative">
-              <input type="text"  placeholder="Mensaje...." class="w-100" id="messageinput">
-              <button class="position-absolute transparent"><i class="bi bi-send"></i></button>
+              <input type="text"  placeholder="Mensaje...." class="w-100" formControlName="MessageInput" id="messageinput"
+              autocomplete="off" (keydown)="EnterSentMessage($event)">
+              <button class="position-absolute transparent"><i class="bi bi-send" (click)="SentMessage()"></i></button>
             </div>
+          </form>
         </div>
     </div>
     <ng-template #Loading >
@@ -47,22 +55,30 @@ import { Preview } from 'src/app/interfaces/PreviewCard.interface';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
-  constructor(private UserService:UserService,private cdr: ChangeDetectorRef){}
-  ngOnChanges(changes: SimpleChanges): void {
-    this.Isload=false
-    this.InitUserInfo()
-    this.GetMessages()
-  }
-  ngOnDestroy(): void {
-    this.Isload=false
-  }
+  constructor(private UserService:UserService,private cdr: ChangeDetectorRef,
+    private FB:FormBuilder,private ChatService:ChatService){
+
+    }
   ngOnInit(): void {
-   this.InitUserInfo()
-   this.GetMessages()
+      this.IsloadUserInfo=false
+      this.InitUserInfo()
+  }
+  public MessageForm:FormGroup=this.FB.group({
+    MessageInput:["",[Validators.minLength(1),Validators.required]]
+  })
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['FriendId'].firstChange) {
+    this.IsloadUserInfo=false
+    this.InitUserInfo()
+    }
+    }
+  ngOnDestroy(): void {
+    this.IsloadUserInfo=false
   }
   @Input()
   FriendId:any=''
-  Isload:boolean=false
+  IsloadUserInfo:boolean=false
   DataUser:Preview={
     displayName:"",
     IsActive:false,
@@ -75,7 +91,7 @@ export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
     ).subscribe({
       next:(inf)=> {
         this.DataUser=inf
-          this.Isload=true
+          this.IsloadUserInfo=true
           this.cdr.detectChanges();
       },
       error:(err)=> {
@@ -84,7 +100,22 @@ export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
     })
 
   }
-  GetMessages(){
 
+  SentMessage(){
+    if (this.MessageForm.valid) {
+      const {MessageInput}=this.MessageForm.value
+      const messageContent={chatId:this.ChatId,Content:MessageInput,emitterId:this.UserService.User.uid,ReceptorId:this.FriendId}
+      this.ChatService.sendMessage(messageContent)
+      this.MessageForm.reset()
+    }
+  }
+  EnterSentMessage(event:any) {
+    if (event.keyCode === 13) {
+      this.SentMessage()
+    }
+  }
+  get ChatId(){
+    const index=this.UserService.User.Friends.findIndex((friend)=>friend.FriendId===this.FriendId)
+    return this.UserService.User.Friends[index].ChatId
   }
 }

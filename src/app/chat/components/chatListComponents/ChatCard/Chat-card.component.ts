@@ -12,21 +12,25 @@ import { UserService } from 'src/app/services/user.service';
     CommonModule,
   ],
   template: `
-  <div class="d-flex justify-content-between py-2" id="previewCard"  style="border-bottom: 1px solid grey;">
+  <div class="d-flex gap-3 py-2" id="previewCard"  style="border-bottom: 1px solid grey;">
     <div class="position-relative">
       <img [src]="Info.photoURL" alt="image">
       <span class="inactive-status" [ngClass]="{'active':Info.IsActive}"></span>
     </div>
-    <div class="d-flex flex-column gap-2">
+    <div class="d-flex flex-grow-1 flex-column gap-2 " style="font-size: 13px;">
       <span>{{Info.displayName}}</span>
-      <span *ngIf="IsType">Is typing..</span>
+      <div *ngIf="IsType" class="typing"></div>
+      <div *ngIf="!IsType" class="message-container">
+          <p class="text"> {{LastMessage}}</p>
+      </div>
     </div>
     <div class="d-flex flex-column gap-2" style="font-size:12px;">
        <span >{{DateLastMessage|date:'short':''}}</span>
-      <span class="badge text-bg-secondary rounded-circle text-center align-self-end" style="width: 25px;" *ngIf="PendientMessages>0">5</span>
+      <span class="badge text-bg-secondary rounded-circle text-center align-self-end" style="width: 25px;" *ngIf="PendientMessages>0">{{PendientMessages}}</span>
     </div>
 
   </div>
+
   `,
   styleUrls: ['./Chat-card.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,4 +50,5 @@ export class previewChatComponent implements OnInit{
   DateLastMessage:Date=new Date()
   PendientMessages:number=0
   IsType:boolean=false
+  LastMessage:string=''
 }

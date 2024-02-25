@@ -6,14 +6,15 @@ import { UserService } from 'src/app/services/user.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { forkJoin, map } from 'rxjs';
 import { Preview } from 'src/app/interfaces/PreviewCard.interface';
+import { Friend } from 'src/app/interfaces/user.interface';
 
 @Component({
     selector: 'app-chat-list',
     standalone: true,
     template: `
     <ul class="list" *ngIf="TheresFriends;">
-  <li *ngFor="let user of FriendData;">
-    <previewChats [Info]="user" (click)="SelectChat(user.uid,Chats[user.uid])" />
+  <li *ngFor="let user of FriendData;let i=index">
+    <previewChats [Info]="user" (click)="SelectChat(user.uid,Chats[i].ChatId)" />
   </li>
 </ul>
 <div class="d-flex justify-content-center flex-wrap w-100 h-100"*ngIf="!IsLoad">
@@ -48,15 +49,15 @@ export class ChatListComponent implements OnInit {
   constructor(private UserService:UserService,private Chat:ChatService,private cdr: ChangeDetectorRef){}
   ngOnInit(): void {
     this.Chats=this.UserService.User.Friends
-    if (this.ChatKeys.length===0) {
+    if (this.Chats.length===0) {
       this.IsLoad = true;
           this.cdr.detectChanges();
     }
     else{
       this.cdr.detectChanges()
-    const observables = this.ChatKeys.map(friendId =>
-      this.UserService.GetUserinfoById(friendId).pipe(
-        map((user) => ({ displayName: user.displayName, IsActive: user.IsActive, photoURL: user.photoURL, uid: friendId }))
+    const observables = this.Chats.map(friendId =>
+      this.UserService.GetUserinfoById(friendId.FriendId).pipe(
+        map((user) => ({ displayName: user.displayName, IsActive: user.IsActive, photoURL: user.photoURL, uid: friendId.FriendId }))
       )
     );
     forkJoin(observables).subscribe({
@@ -75,7 +76,7 @@ export class ChatListComponent implements OnInit {
 
   @ViewChild('Search')
   $searchChat!:ElementRef
-  Chats:Record<string,string>={}
+  Chats:Friend[]=[]
   FriendData:Preview[]=[]
   IsLoad:boolean=false
   searchChat(){
@@ -92,14 +93,11 @@ export class ChatListComponent implements OnInit {
   get UserId(){
     return this.UserService.User.uid
   }
-  get ChatKeys():string[]{
-    return  Object.keys(this.Chats)
-  }
   get TheresFriends(){
-    return this.ChatKeys.length>0&&this.IsLoad
+    return this.Chats.length>0&&this.IsLoad
   }
   get NoFriends(){
-    return this.ChatKeys.length===0&&this.IsLoad
+    return this.Chats.length===0&&this.IsLoad
   }
 
    }

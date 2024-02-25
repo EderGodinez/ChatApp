@@ -1,3 +1,4 @@
+
 import { Router } from '@angular/router';
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -101,6 +102,7 @@ export class LoginComponent {
       const tokenAccess=await user.getIdToken().then((token)=>{
         return token
       })
+      //console.log(tokenAccess)
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)

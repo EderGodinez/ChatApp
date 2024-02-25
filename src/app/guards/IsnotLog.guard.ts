@@ -3,11 +3,12 @@ import { inject } from '@angular/core';
 import { Router, type CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-export const isnotLogGuard: CanActivateFn = (route, state) => {
+export const isnotLogGuard: CanActivateFn = async (route, state) => {
 
 const auth=inject(AuthService)
 const router=inject(Router)
-auth.ValidateUserSession()
+await auth.ValidateUserSession()
+
 let User
 const userString = localStorage.getItem('user')
 if (userString) {

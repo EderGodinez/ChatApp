@@ -1,6 +1,7 @@
 import { UserService } from '../../../../services/user.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Message } from 'src/app/interfaces/Message.interface';
 
 
 @Component({
@@ -11,10 +12,11 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
   ],
   template: `
   <div class="message-container">
-    <div class="message burble" [ngClass]="{'own':IsmessageOwnner}">
-     <p>{{message.messageContent}}</p>
+    <div class="message burble" [ngClass]="{'own':IsMessageOwnner}">
+     <p>{{message.Content}}</p>
     <div class="message-status">
-     <p>{{message.dateSent|date:"short"}}</p>
+      <p style="align-self: self-end;">{{message.Time|date:"short"}}</p>
+      <i class="bi bi-check"[ngClass]="{'bi bi-check-all':message.IsRead}" [ngStyle]="{'color':message.IsRead?'aqua':''}" style="font-size: 12px;    vertical-align: middle;"></i>
     </div>
   </div>
 </div>`,
@@ -22,13 +24,14 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageItemComponent implements OnInit {
-  constructor(private UserService:UserService){}
+  constructor(private UserService:UserService){
+
+  }
   ngOnInit(): void {
   }
   @Input()
-  message!:any
-   get IsmessageOwnner():boolean{
-
-    return this.UserService.User.uid===this.message.emmiterid
+  message!:Message
+   get IsMessageOwnner():boolean{
+    return this.UserService.User.uid===this.message.emitterId
   }
 }

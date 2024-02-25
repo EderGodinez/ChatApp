@@ -12,7 +12,7 @@ import { UserService } from './user.service';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-  constructor(private Http:HttpClient,private UserService:UserService) { }
+  constructor(private Http:HttpClient,private UserService:UserService,private Router:Router) { }
   private API_URL=environments.API_URL
 
 CreateUser(email:string,password:string){
@@ -21,20 +21,25 @@ return createUserWithEmailAndPassword(auth, email, password)
 SignIn(email:string,password:string){
   return signInWithEmailAndPassword(auth, email, password)
 }
-LogOut(){
-  this.UserService.ResetUser()
-  signOut(auth)
-  localStorage.clear()
+async LogOut(){
+  await signOut(auth)
+  .then(()=>{
+    this.UserService.ResetUser()
+    localStorage.clear()
+    setTimeout(() => {
+      this.Router.navigateByUrl('/Inicio/login')
+    }, 1000);
+  })
+  .catch((error)=>{
+    console.error(error)
+  })
 }
-ValidateUserSession(){
+   ValidateUserSession(){
   onAuthStateChanged(auth, (user) => {
     if (user) {
       localStorage.setItem('user',JSON.stringify(user))
-      return
     } else {
         this.LogOut()
-        return
-    return
     }
   })
 

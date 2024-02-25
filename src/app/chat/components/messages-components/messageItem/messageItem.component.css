@@ -2,6 +2,7 @@
   display: flex;
 }
 .message-status{
+  display: inline-flex;
   position: absolute;
   font-size: xx-small;
   right: 10px;
@@ -10,10 +11,10 @@
   position: relative;
   width: auto;
   margin-bottom:  10px;
+  min-width: 120px;
 }
 .message-container .message p{
   margin: 0;
-
 }
 
 .burble{

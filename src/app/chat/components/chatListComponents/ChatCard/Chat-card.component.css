@@ -34,3 +34,41 @@ border-radius: 50%;
 .active{
   background-color:rgb(114, 216, 66);
 }
+.typing {
+  width: fit-content;
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 11px;
+  clip-path: inset(0 3ch 0 0);
+  animation: l4 1s steps(4) infinite;
+}
+.typing:before {
+  color: rgb(42, 173, 55);
+  content:"Escribiendo...."
+}
+@keyframes l4 {to{clip-path: inset(0 -1ch 0 0)}}
+.limit{
+  display: flex;
+  max-width: 250px;
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+}
+.limit::after {
+  content: "...";
+}
+.message-container {
+  width:17rem;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.text {
+  margin: 0;
+  text-overflow: ellipsis; /* Muestra puntos suspensivos en el desbordamiento */
+  overflow: hidden; /* También especifica overflow: hidden para que text-overflow funcione */
+  display: inline-block;
+  max-width: 100%;
+}

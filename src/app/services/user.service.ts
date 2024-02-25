@@ -13,19 +13,19 @@ export class UserService {
   }
   User:User={
     displayName:"",
-    Friends:{},
-    FriendshipRequest:[],
-    IsActive:false,
     photoURL:"",
+    FriendshipRequest:[],
+    Friends:[],
+    IsActive:false,
     uid:""
 }
+
   private Url=environments.API_URL
-AddFriend(uuid:string){
-  this.User.Friends[uuid]=''
-  console.log(this.User.Friends)
-}
   GetUserinfoById(id:string):Observable<User>{
    return this.httpClient.get<User>(`${this.Url}/users/${id}`)
+  }
+  GetFullInfoUserById(uid:string):Observable<User>{
+    return this.httpClient.get<User>(`${this.Url}/users/full/${uid}`)
   }
   RegisterUser(user:CreateUser):Observable<User>{
     return this.httpClient.post<User>(`${this.Url}/users`,user)
@@ -41,14 +41,14 @@ AddFriend(uuid:string){
     return this.httpClient.patch<User>(`${this.Url}/users/CancelRequest`,{uid:this.User.uid,RemitentId:Remitent})
   }
   //Aceptar o eliminar peticiones
-  AddFriendsList():Observable<User>{
-    return this.httpClient.patch<User>(`${this.Url}/users/friends`,this.User)
+  AddFriendsList(friendId:string):Observable<User>{
+    return this.httpClient.patch<User>(`${this.Url}/users/friends`,{NewFriendId:friendId,userId:this.User.uid})
   }
 
     ResetUser(){
     this.User={
       displayName:"",
-      Friends:{},
+      Friends:[],
       FriendshipRequest:[],
       IsActive:false,
       photoURL:"",

@@ -1,4 +1,4 @@
-import { AccessService } from '../../../services/Access.service';
+
 import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
@@ -14,6 +14,7 @@ import { ActionsService } from 'src/app/services/actions.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { ChatService } from 'src/app/services/chat.service';
 import { UserService } from 'src/app/services/user.service';
+import { ChatModule } from '../../Chat.module';
 
 @Component({
   selector: 'app-chat-layout',
@@ -25,7 +26,7 @@ import { UserService } from 'src/app/services/user.service';
     ChatMenuComponent,
     ToatsComponent,
     MessagesAreaComponent,
-
+    ChatModule
   ],
   template: `
   <toats-component [MessageProp]="Message"/>
@@ -67,7 +68,7 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class ChatLayoutComponent implements OnInit,OnDestroy {
   constructor(private Auth:AuthService,private cdr: ChangeDetectorRef,private Router:Router,private Chat:ChatService,
-     private ActionsService:ActionsService,private UserService:UserService,private AccessService:AccessService){}
+     private ActionsService:ActionsService,private UserService:UserService){}
   private messageSubscription: Subscription | undefined;
   roomValue:string|undefined
 UserInfo:InfoUser={
@@ -92,13 +93,12 @@ if (userString) {
   User = JSON.parse(userString);
 }
 const Token:string=User.stsTokenManager.accessToken
-this.UserService.GetUserinfoById(User.uid).subscribe({
+this.UserService.GetFullInfoUserById(User.uid).subscribe({
   next:(user)=> {
     const {photoURL,displayName}=user
     this.UserService.User=user
     this.Isload=true
     this.UserInfo={displayName,photoURL}
-    this.AccessService.setToken(Token)
     },
   complete:()=> {
     this.UserActive()
@@ -117,7 +117,6 @@ this.UserService.GetUserinfoById(User.uid).subscribe({
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
     }
-    console.log('se cierra')
     this.Chat.OnlogOut()
   }
   UserActive(){
@@ -125,11 +124,8 @@ this.UserService.GetUserinfoById(User.uid).subscribe({
       this.cdr.detectChanges();
  }
   SignOut(){
-    this.Auth.LogOut()
     this.Isload=false
-    setTimeout(() => {
-      this.Router.navigate(['Inicio'])
-    }, 2000);
+    this.Auth.LogOut()
   }
   ShowToast(message:MessageProperties){
     this.Message=message

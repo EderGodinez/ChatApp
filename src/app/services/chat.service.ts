@@ -4,13 +4,16 @@ import { Socket } from 'ngx-socket-io';
 import { BehaviorSubject, map } from 'rxjs';
 import { ActionsService } from './actions.service';
 import { NewFriend } from '../interfaces/NewFriend.initerface';
+import { Message } from '../interfaces/Message.interface';
+import { MessagesService } from './messages.service';
+
 interface Chat{
   userId:string
   chatId:string
 }
 @Injectable({providedIn: 'root'})
 export class  ChatService implements OnDestroy {
-  constructor(private socket: Socket,private UserService:UserService,private Toast:ActionsService) {
+  constructor(private socket: Socket,private UserService:UserService,private Toast:ActionsService,private MessageService:MessagesService) {
     const a=localStorage.getItem('user')
     let User:any=''
     if (a) {
@@ -27,20 +30,10 @@ export class  ChatService implements OnDestroy {
     socket.fromEvent('UserWelcome').subscribe((userInfo:any)=>{
       this.Toast.message={ImageUrl:userInfo.photoURL,Content:`Bienvenido ${userInfo.displayName}`,Issue:"Hola bienvenido :D"}
     })
-    socket.fromEvent('new_message').subscribe((message: any) => {
-      const chatObject: ChatType = {
-        user: {
-          chatid:"",
-          PhotoURL:"",
-          uid:"",
-          displayName:"",
-        },
-        message,
-      };
-      this.setChat(chatObject);
+    socket.fromEvent('new_message').subscribe((message:any) => {
+      this.setNewMessage(message);
     });
     socket.fromEvent('on_notification').subscribe((resp:any)=>{
-      console.log(resp)
       this.Toast.message=resp
     })
 
@@ -53,13 +46,9 @@ export class  ChatService implements OnDestroy {
     console.log('se destruyo servicio de chat')
   }
   //Uno es el elemento que emitira valores y el otro unicamente estara recibiendo los valores
-  //Encargado de los amigos
-  private _Friends$ = new BehaviorSubject<UserType[]>([]);
-  public Friends$ = this._Friends$.asObservable();
-  //Uno es el elemento que emitira valores y el otro unicamente estara recibiendo los valores
   //Encargado de los mensajes del chat visto
-  private _chat$ = new BehaviorSubject<ChatType[]>([]);
-  public chat$ = this._chat$.asObservable();
+  private _messages$ = new BehaviorSubject<Message|null>(null);
+  public messages$ = this._messages$.asObservable();
   ///Representa el usuario (uid) y el numero de mensajes pendientes por ver
   NoFocusMesages:Record<string,number>={}
 
@@ -69,31 +58,18 @@ export class  ChatService implements OnDestroy {
   public SetCurrentChat(Chat:Chat){
     this._room$.next(Chat)
   }
-  public setUser(user: UserType): void {
-    const current = this._Friends$.getValue();
-    const state = [...current, user];
-    this._Friends$.next(state);
-  }
 
-  public setChat(message: ChatType): void {
-    const current = this._chat$.getValue();
-    const state = [...current, message];
-    this._chat$.next(state);
+  setNewMessage(messageObject:Message){
+    this._messages$.next(messageObject)
   }
-
-  public initChat(): void {
-    this._chat$.next([]);
-  }
-
   //TODO Enviar mensaje desde el FRONT-> BACKEND
-  sendMessage(payload: { message: string, room?:string }) {
+
+  sendMessage(payload: { chatId:string,emitterId:string,ReceptorId:string,Content:string }) {
     const roomCurrent = this._room$.getValue();
     if (roomCurrent) {
-      payload = { ...payload, room: roomCurrent.chatId };
-      console.log(payload);
-      this.socket.emit('event_message', payload);
+      payload = { ...payload, chatId: roomCurrent.chatId };
+      this.socket.emit('sent_message', payload);
     }
-
   }
   SentNotification(to:string,from:NewFriend,issue:string){
     this.socket.emit('notify_message',{to,from,issue})
@@ -104,7 +80,6 @@ export class  ChatService implements OnDestroy {
       this.socket.emit('event_join', room);
     })
   }
-
   leaveRooms(): void {
     const room = this._room$.getValue();
     this.socket.emit('event_leave', room);
@@ -117,17 +92,4 @@ export class  ChatService implements OnDestroy {
     return this.socket.fromEvent('message');
   }
 }
-
-interface UserType {
-  displayName: string;
-  PhotoURL: string;
-  uid: string;
-  chatid:string
-}
-
-interface ChatType {
-  user: UserType;
-  message: string;
-}
-
 

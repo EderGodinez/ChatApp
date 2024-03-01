@@ -37,7 +37,18 @@ async LogOut(){
    ValidateUserSession(){
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      localStorage.setItem('user',JSON.stringify(user))
+      //Movimientos para un usuario que no inicio sesion con algun madio externo
+      if (!user.displayName) {
+        const a=localStorage.getItem('user')
+        let User:any=''
+        if (a) {
+         User=JSON.parse(a)
+        }
+        localStorage.setItem('user',JSON.stringify({...user,...User}))
+        return
+      }else{
+        localStorage.setItem('user',JSON.stringify(user))
+      }
     } else {
         this.LogOut()
     }

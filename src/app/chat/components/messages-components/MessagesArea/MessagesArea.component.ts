@@ -1,11 +1,9 @@
 import { UserService } from 'src/app/services/user.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { MessageListComponent } from '../messageList/messageList.component';
 import { Subscription, map } from 'rxjs';
 import { Preview } from 'src/app/interfaces/PreviewCard.interface';
-import { MessagesService } from 'src/app/services/messages.service';
-import { Message } from 'src/app/interfaces/Message.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ChatService } from 'src/app/services/chat.service';
 
@@ -33,7 +31,7 @@ import { ChatService } from 'src/app/services/chat.service';
           <form action="" [formGroup]="MessageForm">
             <div class="position-relative">
               <input type="text"  placeholder="Mensaje...." class="w-100" formControlName="MessageInput" id="messageinput"
-              autocomplete="off" (keydown)="EnterSentMessage($event)">
+              autocomplete="off" (keydown)="EnterSentMessage($event)" (input)="Typing()" (blur)="NoTyping()">
               <button class="position-absolute transparent"><i class="bi bi-send" (click)="SentMessage()"></i></button>
             </div>
           </form>
@@ -57,7 +55,19 @@ import { ChatService } from 'src/app/services/chat.service';
 export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
   constructor(private UserService:UserService,private cdr: ChangeDetectorRef,
     private FB:FormBuilder,private ChatService:ChatService){
-
+      this.friendsSubscription= this.ChatService.friend$.subscribe((user)=>{
+        if (user!==null) {
+            this.DataUser.IsActive=user.IsActive
+            this.cdr.detectChanges();
+        }
+      })
+      this.messageSubscription= this.ChatService.messages$.subscribe((message)=>{
+        if (message!==null) {
+          setTimeout(() => {
+            this.ScrollEnd()
+          }, 100);
+        }
+      })
     }
   ngOnInit(): void {
       this.IsloadUserInfo=false
@@ -85,6 +95,9 @@ export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
     photoURL:"",
     uid:""
   }
+  private messageSubscription: Subscription | undefined;
+  private friendsSubscription: Subscription | undefined;
+
   InitUserInfo(){
     this.UserService.GetUserinfoById(this.FriendId).pipe(
       map((user)=>{return {displayName:user.displayName,photoURL:user.photoURL,IsActive:user.IsActive,uid:user.uid}})
@@ -93,6 +106,7 @@ export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
         this.DataUser=inf
           this.IsloadUserInfo=true
           this.cdr.detectChanges();
+          this.ScrollEnd()
       },
       error:(err)=> {
         console.error(err)
@@ -106,7 +120,11 @@ export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
       const {MessageInput}=this.MessageForm.value
       const messageContent={chatId:this.ChatId,Content:MessageInput,emitterId:this.UserService.User.uid,ReceptorId:this.FriendId}
       this.ChatService.sendMessage(messageContent)
+      this.NoTyping()
       this.MessageForm.reset()
+      setTimeout(() => {
+        this.ScrollEnd()
+      }, 500);
     }
   }
   EnterSentMessage(event:any) {
@@ -114,8 +132,23 @@ export class MessagesAreaComponent implements OnChanges,OnDestroy,OnInit{
       this.SentMessage()
     }
   }
+  Typing(){
+    this.ChatService.typingInChat(true,this.DataUser.uid,this.ChatId)
+  }
+  NoTyping(){
+    this.ChatService.typingInChat(false,this.DataUser.uid,this.ChatId)
+  }
   get ChatId(){
     const index=this.UserService.User.Friends.findIndex((friend)=>friend.FriendId===this.FriendId)
     return this.UserService.User.Friends[index].ChatId
+  }
+  ScrollEnd(){
+    const MessagesArea=document.getElementById('messages')
+    if (MessagesArea) {
+      MessagesArea.scrollTo({
+        top: MessagesArea.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
   }
 }

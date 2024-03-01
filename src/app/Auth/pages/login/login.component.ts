@@ -1,5 +1,5 @@
 
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -53,7 +53,7 @@ import { UserService } from 'src/app/services/user.service';
     <loginButtonComponent (click)="SignInWithGoogle()" [TypeButton]="'Google'"/>
     <loginButtonComponent (click)="SignInWithGitHub()" [TypeButton]="'GitHub'"/>
   </div>
-  <a href="Inicio/registro">Crear cuenta</a>
+  <span  (click)="GoRegister()" class="text-primary text-decoration-underline cursor-pointer">Crear cuenta</span>
 
   </div>
 
@@ -102,7 +102,6 @@ export class LoginComponent {
       const tokenAccess=await user.getIdToken().then((token)=>{
         return token
       })
-      //console.log(tokenAccess)
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
@@ -137,9 +136,9 @@ export class LoginComponent {
       localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
-        this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
-          next:(user)=> {
-            this.UserService.User=user
+      this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
+        next:(user)=> {
+          this.UserService.User=user
           },
           error:(err)=> {
             console.error(err)
@@ -164,11 +163,11 @@ export class LoginComponent {
       const tokenAccess=await user.getIdToken().then((token)=>{
         return token
       })
-      localStorage.setItem('user',JSON.stringify(user))
       //Se muestra toast
       this.ShowMessage(user.displayName)
       this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
         next:(user)=> {
+          localStorage.setItem('user',JSON.stringify(user))
           this.UserService.User=user
         },
         error:(err)=> {
@@ -202,12 +201,12 @@ export class LoginComponent {
         const tokenAccess=await user.getIdToken().then((token)=>{
           return token
         })
-      localStorage.setItem('user',JSON.stringify(user))
-      //Se muestra toast
-      this.ShowMessage(user.displayName)
-      this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
-        next:(user)=> {
-          this.UserService.User=user
+        //Se muestra toast
+        this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
+          next:(usercomplete)=> {
+            localStorage.setItem('user',JSON.stringify(usercomplete))
+            this.UserService.User=usercomplete
+            this.ShowMessage(usercomplete.displayName)
         },
         error:(err)=> {
           console.error(err)
@@ -236,6 +235,9 @@ export class LoginComponent {
     Content:`Bienvenido ${username}`,
     Issue:"Inicio de sesion exitoso"
   }
+  }
+  GoRegister(){
+    this.Router.navigateByUrl('Inicio/registro')
   }
 
 

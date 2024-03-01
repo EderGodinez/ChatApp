@@ -14,7 +14,7 @@ import { Friend } from 'src/app/interfaces/user.interface';
     template: `
     <ul class="list" *ngIf="TheresFriends;">
   <li *ngFor="let user of FriendData;let i=index">
-    <previewChats [Info]="user" (click)="SelectChat(user.uid,Chats[i].ChatId)" />
+    <previewChats [Info]="user" [ChatId]="Chats[i].ChatId" (click)="SelectChat(user.uid,Chats[i].ChatId)" />
   </li>
 </ul>
 <div class="d-flex justify-content-center flex-wrap w-100 h-100"*ngIf="!IsLoad">
@@ -89,6 +89,7 @@ export class ChatListComponent implements OnInit {
   }
   SelectChat(userId:string,chatId:string){
     this.Chat.SetCurrentChat({chatId,userId})
+    this.Chat.JoinChat(chatId)
   }
   get UserId(){
     return this.UserService.User.uid

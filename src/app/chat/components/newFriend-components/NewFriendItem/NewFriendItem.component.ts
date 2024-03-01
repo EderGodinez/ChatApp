@@ -31,7 +31,6 @@ import { UserService } from 'src/app/services/user.service';
 export class NewFriendItemComponent implements OnInit {
   constructor(private ActionsService:ActionsService,private UserService:UserService,private cdr:ChangeDetectorRef,private ChatService:ChatService){}
   ngOnInit(): void {
-   // console.log(this.User)
   }
   @Input()
   User:NewFriend={
@@ -41,37 +40,26 @@ export class NewFriendItemComponent implements OnInit {
   }
   public Sent:boolean=false
   SentRequest(){
+    this.ChatService.Sent_Request(this.User.uid)
     const {displayName,uid,photoURL}=this.UserService.User
-    this.UserService.SentFriendShipRequest(this.User.uid).subscribe({
-      next:(value)=> {
-        console.log(value)
-        this.UserService.User={...value}
-        this.cdr.detectChanges()
-        this.ActionsService.message={
-          Content:`Se ah enviado la solicitud a ${this.User.displayName}`,
-          ImageUrl:this.User.photoURL,
-          Issue:"Solicitud de amistad"
-        }
-        this.ChatService.SentNotification(this.User.uid,{displayName,uid,photoURL},'Solicitud de amistad')
-        this.Sent=true
-        this.cdr.detectChanges()
-      },
-    })
+    this.ActionsService.message={
+      Content:`Se ah enviado la solicitud a ${this.User.displayName}`,
+      ImageUrl:this.User.photoURL,
+      Issue:"Solicitud de amistad"
+    }
+    this.Sent=true
+    this.cdr.detectChanges()
 
   }
   CancelRequest(){
-    this.UserService.CancelFriendShipRequest(this.User.uid).subscribe({
-      next:(value)=> {
-        this.UserService.User={...value}
-        this.ActionsService.message={
-          Content:`Se ah cancelado solicitud a ${this.User.displayName}`,
-          ImageUrl:this.User.photoURL,
-          Issue:"Cancelacion de solicitud"
-        }
-        this.Sent=false
-        this.cdr.detectChanges()
-      },
-    })
+    this.ChatService.Cancel_Request(this.User.uid)
+    this.ActionsService.message={
+      Content:`Se ah cancelado solicitud a ${this.User.displayName}`,
+      ImageUrl:this.User.photoURL,
+      Issue:"Cancelacion de solicitud"
+    }
+    this.Sent=false
+    this.cdr.detectChanges()
 
   }
 }

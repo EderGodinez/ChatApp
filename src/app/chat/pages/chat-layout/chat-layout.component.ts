@@ -67,7 +67,7 @@ import { ChatModule } from '../../Chat.module';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatLayoutComponent implements OnInit,OnDestroy {
-  constructor(private Auth:AuthService,private cdr: ChangeDetectorRef,private Router:Router,private Chat:ChatService,
+  constructor(private Auth:AuthService,private cdr: ChangeDetectorRef,private Chat:ChatService,
      private ActionsService:ActionsService,private UserService:UserService){}
   private messageSubscription: Subscription | undefined;
   roomValue:string|undefined
@@ -92,7 +92,7 @@ photoURL:""
 if (userString) {
   User = JSON.parse(userString);
 }
-const Token:string=User.stsTokenManager.accessToken
+this.Chat.connectUser(User)
 this.UserService.GetFullInfoUserById(User.uid).subscribe({
   next:(user)=> {
     const {photoURL,displayName}=user
@@ -117,7 +117,13 @@ this.UserService.GetFullInfoUserById(User.uid).subscribe({
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
     }
-    this.Chat.OnlogOut()
+    setTimeout(() => {
+      this.Auth.LogOut()
+      setTimeout(() => {
+        window.location.reload()
+      }, 1);
+    }, 1);
+    this.Chat.logout()
   }
   UserActive(){
       this.Isload=true
@@ -125,6 +131,7 @@ this.UserService.GetFullInfoUserById(User.uid).subscribe({
  }
   SignOut(){
     this.Isload=false
+    this.Chat.logout()
     this.Auth.LogOut()
   }
   ShowToast(message:MessageProperties){

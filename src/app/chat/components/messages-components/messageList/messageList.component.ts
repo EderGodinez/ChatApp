@@ -1,6 +1,6 @@
 import { UserService } from '../../../../services/user.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
 import { MessageItemComponent } from '../messageItem/messageItem.component';
 import { Message } from 'src/app/interfaces/Message.interface';
 import { MessagesService } from 'src/app/services/messages.service';
@@ -15,7 +15,8 @@ import { Subscription } from 'rxjs';
     CommonModule,
     MessageItemComponent
   ],
-  template: `<ul class="list px-2">
+  template: `
+  <ul class="list px-2" id="list">
     <li *ngFor="let item of messages" [ngStyle]="{'align-self':item.emitterId===UserId?'end':''}">
     <message-item [message]="item"/>
     </li>
@@ -34,15 +35,16 @@ import { Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageListComponent implements OnChanges,OnDestroy {
-  constructor(private UserService:UserService,private cdr:ChangeDetectorRef,
-    private MessagesService:MessagesService,private ChatService:ChatService){
+  constructor(private UserService:UserService,private cdr:ChangeDetectorRef,private el: ElementRef,private ChatService:ChatService){
     this.messageSubscription= this.ChatService.messages$.subscribe((message)=>{
       if (message!==null) {
         if(message.emitterId&&message.chatId===this.ChatId) {
           this.UserService.User.Friends[this.ChatIdIndex].Messages.push(message)
           this.cdr.detectChanges();
       }
-      this.cdr.detectChanges();
+      // if(message.emitterId===this.UserService.User.uid){
+      //   this.ChatService.DropSound()
+      // }
       }
     })
 
@@ -52,7 +54,6 @@ export class MessageListComponent implements OnChanges,OnDestroy {
   }
   ngOnChanges(changes: SimpleChanges): void {
     this.ChatId=changes['ChatId'].currentValue
-    //this.GetMessages()
     this.cdr.detectChanges()
   }
   private messageSubscription: Subscription | undefined;
@@ -67,4 +68,5 @@ export class MessageListComponent implements OnChanges,OnDestroy {
  get messages(){
   return this.UserService.User.Friends[this.ChatIdIndex].Messages
  }
+
 }

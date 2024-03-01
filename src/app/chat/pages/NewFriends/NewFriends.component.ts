@@ -67,7 +67,6 @@ export class NewFriendsComponent implements OnInit {
   searchFriend(){
     this.IsLoad=false
     this.cdr.detectChanges()
-    console.log(this.$searchUsers.nativeElement.value)
     this.UserService.GetusersList(this.$searchUsers.nativeElement.value)
     .pipe(
       map((users)=>{

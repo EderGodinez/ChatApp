@@ -4,7 +4,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { FriendshipReqitemComponent } from '../../components/request-components/FriendshipReqitem/FriendshipReqitem.component';
 import { RequestFriendShip } from 'src/app/interfaces/RequestFriendship.interface';
 import { UserService } from 'src/app/services/user.service';
-import { filter, forkJoin, map } from 'rxjs';
+import { filter, forkJoin, map, tap } from 'rxjs';
 import { ChatService } from 'src/app/services/chat.service';
 import { RequestSentItemComponent } from '../../components/request-components/Request-Sent-item/Request-Sent-item.component';
 
@@ -101,55 +101,40 @@ export class FriendShipReqComponent implements OnInit{
   RequestRecived:any[]=[]
   IsLoad:boolean=false
   AcceptRequest($event:RequestFriendShip){
-    console.log($event)
+    this.Chat.Accept_Request($event.uid)
     //SE ELIMINA DE LA LISTA DE PETICIONES Y SE AGREGA A AMIGOS
     this.RequestRecived=this.RequestRecived.filter((request)=>request.uid!==$event.uid)
     this.cdr.detectChanges()
     this.UserService.User.FriendshipRequest=this.UserService.User.FriendshipRequest.filter((req)=>req.EmmiterId!==$event.uid)
-    this.UserService.AddFriendsList($event.uid).subscribe({
-      next:(UserInfo)=> {
-        console.log(UserInfo)
-        this.ActionsService.message={
-          Content:"Se ah creado nuevo chat con "+$event.displayName,
-          ImageUrl:`${$event.photoURL}`,
-          Issue:"Nuevo amigo"
-        }
-        this.UserService.User=UserInfo
-        this.cdr.detectChanges()
-        const{ displayName,uid,photoURL }=this.UserService.User
-        this.Chat.SentNotification($event.uid,{displayName,photoURL,uid},'Nuevo amigo')
-    },
-      error:(err)=> {
-        console.error(err)
-  },})
+    this.ActionsService.message={
+      Content:"Se ah creado nuevo chat con "+$event.displayName,
+      ImageUrl:`${$event.photoURL}`,
+      Issue:"Nuevo amigo"
+    }
+    this.cdr.detectChanges()
   }
   DeleteRequest($event:RequestFriendShip){
+    this.Chat.Reject_Request($event.uid)
     //Se elimina el la peticion del usuario
     this.RequestRecived=this.RequestRecived.filter((request)=>request.uid!==$event.uid)
-    this.UserService.CancelFriendShipRequest($event.uid).subscribe((user)=>{
+    this.UserService.User.FriendshipRequest=this.UserService.User.FriendshipRequest.filter((req)=>req.EmmiterId!==$event.uid)
     this.ActionsService.message={
       Content:"Has eliminado la solicitud de "+$event.displayName,
       ImageUrl:`${$event.photoURL}`,
       Issue:"Elimminacion de solicitud"
     }
-    this.UserService.User=user
     this.cdr.detectChanges()
-    })
-
-
   }
   CancelRequest($event:RequestFriendShip){
-    this.UserService.CancelFriendShipRequest($event.uid).subscribe((user)=>{
-      this.RequestSent=this.RequestSent.filter((req)=>req.uid!==$event.uid)
+    this.Chat.Cancel_Request($event.uid)
+    this.RequestSent=this.RequestSent.filter((req)=>req.uid!==$event.uid)
+    this.UserService.User.FriendshipRequest=this.UserService.User.FriendshipRequest.filter((req)=>req.EmmiterId!==$event.uid)
     this.ActionsService.message={
       Content:"Has cancelado la solicitud de "+$event.displayName,
       ImageUrl:`${$event.photoURL}`,
       Issue:"Solicitud cancelada"
     }
-    this.UserService.User=user
       this.cdr.detectChanges()
-    })
-
   }
   get PendientRequest(){
     const TotalRequest=this.RequestRecived.length+this.RequestSent.length

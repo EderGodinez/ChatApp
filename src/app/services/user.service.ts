@@ -33,17 +33,6 @@ export class UserService {
   GetusersList(query:string):Observable<User[]>{
     return this.httpClient.get<User[]>(`${this.Url}/users/list?search=${query}&except=${this.User.uid}`)
   }
-  //Enviar y cancelar peticiones de amistad
-  SentFriendShipRequest(RemitentId:string):Observable<User>{
-    return this.httpClient.patch<User>(`${this.Url}/users/SentRequest`,{uid:this.User.uid,RemitentId})
-  }
-  CancelFriendShipRequest(Remitent:string):Observable<User>{
-    return this.httpClient.patch<User>(`${this.Url}/users/CancelRequest`,{uid:this.User.uid,RemitentId:Remitent})
-  }
-  //Aceptar o eliminar peticiones
-  AddFriendsList(friendId:string):Observable<User>{
-    return this.httpClient.patch<User>(`${this.Url}/users/friends`,{NewFriendId:friendId,userId:this.User.uid})
-  }
 
     ResetUser(){
     this.User={

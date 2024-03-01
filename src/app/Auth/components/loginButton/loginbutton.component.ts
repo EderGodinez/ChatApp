@@ -40,8 +40,6 @@ export class LoginButtonComponent implements AfterViewInit{
 getclassIcon():string{
   return this.ButtonProperties[this.TypeButton]
 }
-  ExecuteFuntion(){
-    console.log('se emitio')
-  }
+  
 
 }

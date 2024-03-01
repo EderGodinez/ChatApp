@@ -28,7 +28,6 @@ export class LoginLayoutComponent implements OnInit,OnDestroy{
   ngOnInit(): void {
     this.ShowToast()
     this.messageSubscription = this.ActionsService.message$.subscribe((message: MessageProperties) => {
-      console.log('cambio',message)
       this.ShowToast();
     });
     }

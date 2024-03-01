@@ -113,7 +113,6 @@ export class RegisterComponent {
         ///Se registra en nuestro backend de mongo
         this.UserService.RegisterUser({displayName:this.RegisterForm.get('projectName')?.value,email,uid}).subscribe({
           next:(value)=> {
-            console.log(value)
             this.ActionsService.message={
               Content:`Cuenta a nombre de ${projectName} registrada con exito`,
               Issue:"Registro exitoso"

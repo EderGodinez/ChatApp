@@ -1,7 +1,7 @@
 export const environments={
   production:false,
   /*Informacion de Aplicacion de firebase*/
-  apiKey: "",
+  apiKey: "test",
   authDomain: "",
   projectId: "",
   storageBucket: "",

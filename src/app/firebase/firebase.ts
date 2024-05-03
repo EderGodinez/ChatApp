@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { environments } from "src/env/environments";
 import { FacebookAuthProvider, GithubAuthProvider, GoogleAuthProvider, getAuth } from "firebase/auth"
+console.log(environments.apiKey)
 const firebaseConfig = {
   apiKey: environments.apiKey,
   authDomain: environments.authDomain,

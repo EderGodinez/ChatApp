@@ -1,5 +1,5 @@
 export const environments={
-  production:false,
+  production:true,
   apiKey: "AIzaSyBwZdIOYZxEgyvGtVzP0inJOQdmS-62aB0",
   authDomain: "chatapp-7d112.firebaseapp.com",
   projectId: "chatapp-7d112",

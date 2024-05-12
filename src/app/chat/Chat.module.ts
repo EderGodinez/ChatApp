@@ -11,8 +11,7 @@ if (a) {
 
 
  currentUserToken =User.stsTokenManager?.accessToken
-  const config: SocketIoConfig = { url: `wss://chatapp-back-aki3.onrender.com` };
-  //, options: {query:{token:currentUserToken}},
+  const config: SocketIoConfig = { url: environments.SOCKET_URL ,options: {query:{token:currentUserToken}}, };
 @NgModule({
   imports: [
     SocketIoModule.forRoot(config)

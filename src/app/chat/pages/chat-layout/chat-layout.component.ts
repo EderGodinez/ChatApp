@@ -95,6 +95,7 @@ if (userString) {
 this.Chat.connectUser(User)
 this.UserService.GetFullInfoUserById(User.uid).subscribe({
   next:(user)=> {
+    console.log(user,'desde layout')
     const {photoURL,displayName}=user
     this.UserService.User=user
     this.Isload=true

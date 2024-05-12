@@ -62,6 +62,7 @@ export class ChatListComponent implements OnInit {
     );
     forkJoin(observables).subscribe({
       next: (users) => {
+        console.log(users)
           this.FriendData = users;
           this.IsLoad = true;
           this.cdr.detectChanges();

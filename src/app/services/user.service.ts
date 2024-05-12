@@ -25,6 +25,7 @@ export class UserService {
    return this.httpClient.get<User>(`${this.Url}/users/${id}`)
   }
   GetFullInfoUserById(uid:string):Observable<User>{
+    console.log(`${this.Url}/users/full/${uid}`)
     return this.httpClient.get<User>(`${this.Url}/users/full/${uid}`)
   }
   RegisterUser(user:CreateUser):Observable<User>{

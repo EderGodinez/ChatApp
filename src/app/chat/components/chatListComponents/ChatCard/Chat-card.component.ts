@@ -60,7 +60,7 @@ export class previewChatComponent implements OnInit{
         if(message.emitterId&&this.ChatId===message.chatId) {
           this.LastMessage=message
         }
-        if(message.chatId!==this.ChatService.currentChat.chatId){
+        if(message.chatId!==this.ChatService.currentChat.chatId&&message.chatId===this.ChatId){
           this.PendientMessages+=1
         }
       }

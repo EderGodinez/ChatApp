@@ -42,9 +42,6 @@ export class MessageListComponent implements OnChanges,OnDestroy {
           this.UserService.User.Friends[this.ChatIdIndex].Messages.push(message)
           this.cdr.detectChanges();
       }
-      // if(message.emitterId===this.UserService.User.uid){
-      //   this.ChatService.DropSound()
-      // }
       }
     })
 

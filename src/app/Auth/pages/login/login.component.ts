@@ -168,13 +168,13 @@ export class LoginComponent {
       this.UserService.RegisterUser({displayName:user.displayName,email:user.email,uid:user.uid,photoURL:user.photoURL}).subscribe({
         next:(user)=> {
           localStorage.setItem('user',JSON.stringify(user))
+          this.Router.navigateByUrl(`chats/${user.uid}`)
           this.UserService.User=user
         },
         error:(err)=> {
           console.error(err)
         },
         complete:()=> {
-
           this.Router.navigateByUrl(`${user.uid}/chats`)
         },
       })

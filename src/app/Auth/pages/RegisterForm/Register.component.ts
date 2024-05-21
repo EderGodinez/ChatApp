@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { AuthService } from 'src/app/services/auth.service';
 import { ValidatorService } from 'src/app/validators/validators.service';
 import { ActionsService } from 'src/app/services/actions.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -57,7 +58,11 @@ import { ActionsService } from 'src/app/services/actions.service';
 })
 export class RegisterComponent {
   constructor(private FB:FormBuilder,private ValidatorService:ValidatorService,private Auth:AuthService,
-    private UserService:UserService,private ActionsService:ActionsService){
+    private UserService:UserService,private ActionsService:ActionsService,private Router:Router){
+      this.ActionsService.message={
+        Content:`Registrate para acceder a chat`,
+        Issue:"Registro"
+      }
   }
   public RegisterForm:FormGroup=this.FB.group({
     projectName:["",[Validators.required,Validators.minLength(6)]],
@@ -111,12 +116,11 @@ export class RegisterComponent {
       .then((userCredential) => {
         const {email,uid}=userCredential.user
         ///Se registra en nuestro backend de mongo
-        this.UserService.RegisterUser({displayName:this.RegisterForm.get('projectName')?.value,email,uid}).subscribe({
-          next:(value)=> {
-            this.ActionsService.message={
-              Content:`Cuenta a nombre de ${projectName} registrada con exito`,
-              Issue:"Registro exitoso"
-            }
+        this.UserService.RegisterUser({displayName:projectName,email,uid,photoURL:'/assets/images/default-user.jpg'}).subscribe({
+          next:(user)=> {
+            localStorage.setItem('user',JSON.stringify(user))
+            this.UserService.User=user
+            this.Router.navigateByUrl(`${user.uid}/chats`)
           },
           error:(err)=> {
             this.ActionsService.message={
@@ -129,6 +133,7 @@ export class RegisterComponent {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(error)
         if (errorCode==='auth/email-already-in-use') {
           this.RegisterForm.get('confirmPass')?.markAsTouched()
           return this.RegisterForm.get('confirmPass')?.setErrors({AccountAlreadyRegister:true})
